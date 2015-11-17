@@ -7,12 +7,12 @@
 
 EditorWindowView::EditorWindowView()
 {
+	colorPaletteWindowView = new ColorPaletteWindowView(this);
+	colorPaletteWindowView->show();
+
 	createFileMenu();
 	createColorPaletteMenu();
 	createMDIArea();
-
-	colorPaletteWindowView = new ColorPaletteWindowView(this);
-	colorPaletteWindowView->show();
 }
 
 EditorWindowView::~EditorWindowView()
@@ -61,9 +61,9 @@ void EditorWindowView::createColorPaletteMenu()
 
 	colorPaletteMenu = menuBar()->addMenu(tr("Color &Palette"));
 
-	loadColorPaletteAction = new QAction(tr("&Import..."), this);
+	loadColorPaletteAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/open.png"), tr("&Import..."), this);
 	loadColorPaletteAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_O);
-	//connect(loadColorPaletteAction, SIGNAL(triggered()), this, SLOT(loadPalette()));
+	connect(loadColorPaletteAction, SIGNAL(triggered()), colorPaletteWindowView->getColorPaletteSwatchesDelegate(), SLOT(importColorPalette()));
 	colorPaletteMenu->addAction(loadColorPaletteAction);
 }
 

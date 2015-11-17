@@ -16,9 +16,11 @@ SOURCES +=\
     Main.cpp \
     Model/ColorPaletteModel.cpp \
     View/EditorWindowView.cpp \
-    View/ColorPaletteWindowView.cpp
+    View/ColorPaletteWindowView.cpp \
+    Delegate/ColorPaletteSwatchesDelegate.cpp
 
 HEADERS  += \
     Model/ColorPaletteModel.hpp \
     View/EditorWindowView.hpp \
-    View/ColorPaletteWindowView.hpp
+    View/ColorPaletteWindowView.hpp \
+    Delegate/ColorPaletteSwatchesDelegate.hpp
