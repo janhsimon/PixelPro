@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QColor>
+#include <QtWidgets>
 
 class ColorPaletteModel
 {

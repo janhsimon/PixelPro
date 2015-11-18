@@ -1,21 +1,20 @@
 #pragma once
 
-#include <QMainWindow>
-#include <QMdiArea>
+#include "ImageArea/ImageArea.hpp"
+#include "SideBar/SideBar.hpp"
 
-#include "ColorPaletteWindowView.hpp"
-
-class EditorWindowView : public QMainWindow
+class Editor : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	EditorWindowView();
-	~EditorWindowView();
+	Editor();
+	~Editor();
 
 private:
-	QMdiArea *mdiArea;
-	ColorPaletteWindowView *colorPaletteWindowView;
+	SideBar *sideBar;
+	ImageArea *imageArea;
+	QSplitter *splitter;
 
 	QMenu *fileMenu;
 	QAction *newAction;
@@ -27,7 +26,11 @@ private:
 	QMenu *colorPaletteMenu;
 	QAction *loadColorPaletteAction;
 
+	QMenu *viewMenu;
+	QAction *zoomInAction;
+	QAction *zoomOutAction;
+
 	void createFileMenu();
 	void createColorPaletteMenu();
-	void createMDIArea();
+	void createViewMenu();
 };

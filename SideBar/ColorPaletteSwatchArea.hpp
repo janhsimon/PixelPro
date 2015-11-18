@@ -1,15 +1,13 @@
 #pragma once
 
-#include <QWidget>
+#include "ColorPaletteModel.hpp"
 
-#include "Model/ColorPaletteModel.hpp"
-
-class ColorPaletteSwatchesDelegate : public QWidget
+class ColorPaletteSwatchArea : public QWidget
 {
 	Q_OBJECT
 
 public:
-	ColorPaletteSwatchesDelegate(ColorPaletteModel *colorPaletteModel);
+	ColorPaletteSwatchArea(ColorPaletteModel *colorPaletteModel);
 
 	void paintEvent(QPaintEvent*);
 
@@ -20,7 +18,4 @@ private:
 	ColorPaletteModel *colorPaletteModel;
 
 	unsigned short selectedColorSwatchIndex;
-
-public slots:
-	void importColorPalette();
 };

@@ -1,20 +1,18 @@
-#include <QFileDialog>
-#include <QMouseEvent>
-#include <QPainter>
-
 #include <assert.h>
 
-#include "ColorPaletteSwatchesDelegate.hpp"
+#include "ColorPaletteSwatchArea.hpp"
 
-ColorPaletteSwatchesDelegate::ColorPaletteSwatchesDelegate(ColorPaletteModel *colorPaletteModel)
+ColorPaletteSwatchArea::ColorPaletteSwatchArea(ColorPaletteModel *colorPaletteModel)
 {
 	assert(colorPaletteModel);
 	this->colorPaletteModel = colorPaletteModel;
 
+	setFixedSize(225, 225);
+
 	selectedColorSwatchIndex = 0;
 }
 
-void ColorPaletteSwatchesDelegate::paintEvent(QPaintEvent*)
+void ColorPaletteSwatchArea::paintEvent(QPaintEvent*)
 {
 	const int numColorSwatchesXY = sqrt(colorPaletteModel->MAX_COLORS);
 
@@ -54,7 +52,7 @@ void ColorPaletteSwatchesDelegate::paintEvent(QPaintEvent*)
 	}
 }
 
-void ColorPaletteSwatchesDelegate::mouseReleaseEvent(QMouseEvent *event)
+void ColorPaletteSwatchArea::mouseReleaseEvent(QMouseEvent *event)
 {
 	assert(event);
 
@@ -83,15 +81,4 @@ void ColorPaletteSwatchesDelegate::mouseReleaseEvent(QMouseEvent *event)
 	assert(selectedColorSwatchIndex >= 0 && selectedColorSwatchIndex < colorPaletteModel->MAX_COLORS);
 
 	repaint();
-}
-
-void ColorPaletteSwatchesDelegate::importColorPalette()
-{
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Import Color Palette"), "", tr("PAL files (*.pal)"));
-
-	if (fileName.isNull() || fileName.isEmpty())
-		return;
-
-	assert(colorPaletteModel);
-	colorPaletteModel->import(fileName);
 }

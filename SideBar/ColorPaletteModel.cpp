@@ -1,5 +1,4 @@
-#include <QFile>
-#include <QMessageBox>
+#include <QtWidgets>
 
 #include <assert.h>
 
@@ -35,8 +34,6 @@ void ColorPaletteModel::import(const QString &fileName)
 
 	for (int colorIndex = numColorsInPalette; colorIndex < MAX_COLORS; ++colorIndex)
 		colors[colorIndex] = Qt::black;
-
-	file.close();
 }
 
 QColor ColorPaletteModel::getColorFromByteArray(const QByteArray &bytes, unsigned short colorIndex)

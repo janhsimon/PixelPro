@@ -13,14 +13,19 @@ TEMPLATE = app
 
 
 SOURCES +=\
-    Main.cpp \
-    Model/ColorPaletteModel.cpp \
-    View/EditorWindowView.cpp \
-    View/ColorPaletteWindowView.cpp \
-    Delegate/ColorPaletteSwatchesDelegate.cpp
+    SideBar/SideBar.cpp \
+    SideBar/ColorPaletteRollOut.cpp \
+    Editor.cpp \
+    SideBar/ColorPaletteSwatchArea.cpp \
+    ImageArea/Image.cpp \
+    SideBar/ColorPaletteModel.cpp \
+    ImageArea/ImageArea.cpp
 
 HEADERS  += \
-    Model/ColorPaletteModel.hpp \
-    View/EditorWindowView.hpp \
-    View/ColorPaletteWindowView.hpp \
-    Delegate/ColorPaletteSwatchesDelegate.hpp
+    SideBar/SideBar.hpp \
+    SideBar/ColorPaletteRollOut.hpp \
+    Editor.hpp \
+    SideBar/ColorPaletteSwatchArea.hpp \
+    ImageArea/Image.hpp \
+    SideBar/ColorPaletteModel.hpp \
+    ImageArea/ImageArea.hpp
