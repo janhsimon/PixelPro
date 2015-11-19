@@ -3,6 +3,7 @@
 #include <QtWidgets>
 
 #include "ColorPaletteRollOut.hpp"
+#include "DrawingToolsRollOut.hpp"
 
 class SideBar : public QWidget
 {
@@ -12,13 +13,14 @@ public:
 	SideBar();
 	~SideBar();
 
+	DrawingToolsRollOut *getDrawingToolsRollOut();
 	ColorPaletteRollOut *getColorPaletteRollOut();
 
 private:
 	QVBoxLayout *layout;
 
 	QPushButton *drawingToolsRollOutButton;
-	//ColorPaletteRollOut *colorPaletteRollOut;
+	DrawingToolsRollOut *drawingToolsRollOut;
 
 	ColorPaletteModel *colorPaletteModel;
 	QPushButton *colorPaletteRollOutButton;
@@ -31,5 +33,6 @@ private:
 	//ColorPaletteRollOut *colorPaletteRollOut;
 
 private slots:
+	void toggleDrawingToolsRollOut();
 	void toggleColorPaletteRollOut();
 };

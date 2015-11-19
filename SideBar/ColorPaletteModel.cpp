@@ -21,7 +21,7 @@ void ColorPaletteModel::import(const QString &fileName)
 
 	if (!file.open(QIODevice::ReadOnly))
 	{
-		QMessageBox::critical(0, "Error", "Failed to load palette definition file \"" + fileName + "\": " + file.errorString());
+		QMessageBox::critical(nullptr, "Error", "Failed to load palette definition file \"" + fileName + "\": " + file.errorString());
 		return;
 	}
 

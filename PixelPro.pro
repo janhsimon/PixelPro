@@ -19,7 +19,8 @@ SOURCES +=\
     SideBar/ColorPaletteSwatchArea.cpp \
     ImageArea/Image.cpp \
     SideBar/ColorPaletteModel.cpp \
-    ImageArea/ImageArea.cpp
+    ImageArea/ImageArea.cpp \
+    SideBar/DrawingToolsRollOut.cpp
 
 HEADERS  += \
     SideBar/SideBar.hpp \
@@ -28,4 +29,5 @@ HEADERS  += \
     SideBar/ColorPaletteSwatchArea.hpp \
     ImageArea/Image.hpp \
     SideBar/ColorPaletteModel.hpp \
-    ImageArea/ImageArea.hpp
+    ImageArea/ImageArea.hpp \
+    SideBar/DrawingToolsRollOut.hpp

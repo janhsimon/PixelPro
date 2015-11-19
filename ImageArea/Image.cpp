@@ -27,7 +27,7 @@ bool Image::open(const QString &fileName)
 
 	if (pixmap->isNull())
 	{
-		QMessageBox::critical(0, "Error", "Failed to open image file \"" + fileName + "\".");
+		QMessageBox::critical(nullptr, "Error", "Failed to open image file \"" + fileName + "\".");
 		return false;
 	}
 
@@ -51,6 +51,16 @@ bool Image::open(const QString &fileName)
 	updateTitle();
 
 	return true;
+}
+
+void Image::saveAs(const QString &fileName)
+{
+	assert(!fileName.isNull() && !fileName.isEmpty());
+	assert(pixmap);
+	assert(!pixmap->isNull());
+
+	if (!pixmap->save(fileName))
+		QMessageBox::critical(nullptr, "Error", "Failed to save image file as \"" + fileName + "\".");
 }
 
 void Image::zoomIn()
@@ -98,6 +108,21 @@ void Image::paintEvent(QPaintEvent*)
 
 	QPainter painter(this);
 	painter.drawPixmap(0, 0, pixmap->scaled(pixmap->width() * zoomFactor, pixmap->height() * zoomFactor));
+}
+
+void Image::wheelEvent(QWheelEvent *event)
+{
+	assert(event);
+
+	Qt::KeyboardModifiers keyboardModifiers = QApplication::keyboardModifiers();
+
+	if (!keyboardModifiers.testFlag(Qt::ControlModifier))
+		return;
+
+	if (event->delta() > 0)
+		zoomIn();
+	else if (event->delta() < 0)
+		zoomOut();
 }
 
 void Image::updateTitle()

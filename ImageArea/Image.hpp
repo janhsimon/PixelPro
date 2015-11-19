@@ -11,11 +11,14 @@ public:
 
 	void newEmpty();
 	bool open(const QString &fileName);
+	void saveAs(const QString &fileName);
 
 	void zoomIn();
 	void zoomOut();
 
-	void paintEvent(QPaintEvent *event);
+protected:
+	virtual void paintEvent(QPaintEvent *event);
+	virtual void wheelEvent(QWheelEvent *event);
 
 private:
 	const int MAX_ZOOM_FACTOR = 16;

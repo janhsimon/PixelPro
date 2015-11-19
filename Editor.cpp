@@ -60,7 +60,7 @@ void Editor::createFileMenu()
 
 	saveAsAction = new QAction(tr("Save &As..."), this);
 	saveAsAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
-	//connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
+	connect(saveAsAction, SIGNAL(triggered()), imageArea, SLOT(saveImageAs()));
 	fileMenu->addAction(saveAsAction);
 
 	fileMenu->addSeparator();

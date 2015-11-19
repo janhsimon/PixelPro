@@ -10,12 +10,15 @@ ImageArea::ImageArea()
 
 Image *ImageArea::getCurrentImage()
 {
+	if (!currentSubWindow())
+		return nullptr;
+
 	Image *currentImage = (Image*)currentSubWindow()->widget();
 
-	if (currentImage)
-		return currentImage;
+	if (!currentImage)
+		return nullptr;
 
-	return nullptr;
+	return currentImage;
 }
 
 void ImageArea::newImage()
@@ -40,6 +43,21 @@ void ImageArea::openImage()
 		addSubWindow(image);
 		image->show();
 	}
+}
+
+void ImageArea::saveImageAs()
+{
+	Image *currentImage = getCurrentImage();
+
+	if (!currentImage)
+		return;
+
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image As"), "", tr("Portable Network Graphics (*.png)"));
+
+	if (fileName.isNull() || fileName.isEmpty())
+		return;
+
+	currentImage->saveAs(fileName);
 }
 
 void ImageArea::zoomInCurrentImage()

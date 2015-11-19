@@ -7,6 +7,8 @@ SideBar::SideBar()
 {
 	drawingToolsRollOutButton = new QPushButton(QIcon("E:/Qt Projects/PixelPro/images/new.png"), tr("Drawing Tools"));
 	drawingToolsRollOutButton->setStyleSheet("Text-align:left");
+	drawingToolsRollOut = new DrawingToolsRollOut();
+	connect(drawingToolsRollOutButton, SIGNAL(clicked()), this, SLOT(toggleDrawingToolsRollOut()));
 
 	colorPaletteModel = new ColorPaletteModel();
 	colorPaletteRollOutButton = new QPushButton(QIcon("E:/Qt Projects/PixelPro/images/open.png"), tr("Color Palette"));
@@ -22,6 +24,7 @@ SideBar::SideBar()
 
 	layout = new QVBoxLayout();
 	layout->addWidget(drawingToolsRollOutButton);
+	layout->addWidget(drawingToolsRollOut);
 	layout->addWidget(colorPaletteRollOutButton);
 	layout->addWidget(colorPaletteRollOut);
 	layout->addWidget(tileGridRollOutButton);
@@ -34,6 +37,9 @@ SideBar::SideBar()
 
 SideBar::~SideBar()
 {
+	assert(drawingToolsRollOut);
+	delete drawingToolsRollOut;
+
 	assert(drawingToolsRollOutButton);
 	delete drawingToolsRollOutButton;
 
@@ -56,10 +62,23 @@ SideBar::~SideBar()
 	delete layout;
 }
 
+DrawingToolsRollOut *SideBar::getDrawingToolsRollOut()
+{
+	assert(drawingToolsRollOut);
+	return drawingToolsRollOut;
+}
+
 ColorPaletteRollOut *SideBar::getColorPaletteRollOut()
 {
 	assert(colorPaletteRollOut);
 	return colorPaletteRollOut;
+}
+
+void SideBar::toggleDrawingToolsRollOut()
+{
+	assert(layout);
+	assert(drawingToolsRollOut);
+	drawingToolsRollOut->setVisible(!drawingToolsRollOut->isVisible());
 }
 
 void SideBar::toggleColorPaletteRollOut()
