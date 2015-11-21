@@ -14,6 +14,8 @@ public:
 	~SideBar();
 
 	DrawingToolsRollOut *getDrawingToolsRollOut();
+
+	ColorPaletteModel *getColorPaletteModel();
 	ColorPaletteRollOut *getColorPaletteRollOut();
 
 private:

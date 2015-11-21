@@ -16,6 +16,4 @@ protected:
 
 private:
 	ColorPaletteModel *colorPaletteModel;
-
-	unsigned short selectedColorSwatchIndex;
 };

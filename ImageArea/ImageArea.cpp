@@ -2,8 +2,11 @@
 
 #include "ImageArea.hpp"
 
-ImageArea::ImageArea()
+ImageArea::ImageArea(ColorPaletteModel *colorPaletteModel)
 {
+	assert(colorPaletteModel);
+	this->colorPaletteModel = colorPaletteModel;
+
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 }
@@ -23,7 +26,8 @@ Image *ImageArea::getCurrentImage()
 
 void ImageArea::newImage()
 {
-	Image *image = new Image();
+	assert(colorPaletteModel);
+	Image *image = new Image(colorPaletteModel);
 	image->newEmpty();
 	addSubWindow(image);
 	image->show();
@@ -36,7 +40,8 @@ void ImageArea::openImage()
 	if (fileName.isNull() || fileName.isEmpty())
 		return;
 
-	Image *image = new Image();
+	assert(colorPaletteModel);
+	Image *image = new Image(colorPaletteModel);
 
 	if (image->open(fileName))
 	{

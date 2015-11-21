@@ -8,8 +8,6 @@ ColorPaletteSwatchArea::ColorPaletteSwatchArea(ColorPaletteModel *colorPaletteMo
 	this->colorPaletteModel = colorPaletteModel;
 
 	setFixedSize(225, 225);
-
-	selectedColorSwatchIndex = 0;
 }
 
 void ColorPaletteSwatchArea::paintEvent(QPaintEvent*)
@@ -38,7 +36,7 @@ void ColorPaletteSwatchArea::paintEvent(QPaintEvent*)
 			painter.setBrush(QBrush(color));
 			painter.drawRect(x * w, y * h, w, h);
 
-			if (index == selectedColorSwatchIndex)
+			if (index == colorPaletteModel->getSelectedColorIndex())
 			{
 				painter.setBrush(QBrush(Qt::transparent));
 
@@ -77,8 +75,7 @@ void ColorPaletteSwatchArea::mouseReleaseEvent(QMouseEvent *event)
 	assert(h > 0);
 	const int clickRow = (int)(y * ((float)numColorSwatchesXY / h));
 
-	selectedColorSwatchIndex = clickRow * numColorSwatchesXY + clickColumn;
-	assert(selectedColorSwatchIndex >= 0 && selectedColorSwatchIndex < colorPaletteModel->MAX_COLORS);
+	colorPaletteModel->setSelectedColorIndex(clickRow * numColorSwatchesXY + clickColumn);
 
 	repaint();
 }

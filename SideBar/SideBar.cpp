@@ -68,6 +68,12 @@ DrawingToolsRollOut *SideBar::getDrawingToolsRollOut()
 	return drawingToolsRollOut;
 }
 
+ColorPaletteModel *SideBar::getColorPaletteModel()
+{
+	assert(colorPaletteModel);
+	return colorPaletteModel;
+}
+
 ColorPaletteRollOut *SideBar::getColorPaletteRollOut()
 {
 	assert(colorPaletteRollOut);

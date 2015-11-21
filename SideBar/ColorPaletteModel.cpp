@@ -7,12 +7,31 @@
 ColorPaletteModel::ColorPaletteModel()
 {
 	loadDefaultColorPalette();
+
+	selectedColor = 0;
 }
 
 QColor ColorPaletteModel::getColor(int i)
 {
 	assert(i >= 0 && i < MAX_COLORS);
 	return colors[i];
+}
+
+QColor ColorPaletteModel::getSelectedColor()
+{
+	return getColor(selectedColor);
+}
+
+unsigned short ColorPaletteModel::getSelectedColorIndex()
+{
+	assert(selectedColor >= 0 && selectedColor < MAX_COLORS);
+	return selectedColor;
+}
+
+void ColorPaletteModel::setSelectedColorIndex(unsigned short index)
+{
+	assert(index >= 0 && index < MAX_COLORS);
+	selectedColor = index;
 }
 
 void ColorPaletteModel::import(const QString &fileName)

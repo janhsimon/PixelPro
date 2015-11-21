@@ -12,7 +12,7 @@ Editor::Editor()
 	//toolBoxScrollArea->setWidget(toolBoxView);
 	//toolBoxScrollArea->setFixedWidth(256);
 
-	imageArea = new ImageArea();
+	imageArea = new ImageArea(sideBar->getColorPaletteModel());
 
 	splitter = new QSplitter();
 	splitter->addWidget(sideBar);

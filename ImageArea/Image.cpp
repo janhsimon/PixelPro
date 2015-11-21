@@ -2,8 +2,10 @@
 
 #include "Image.hpp"
 
-Image::Image()
+Image::Image(ColorPaletteModel *colorPaletteModel)
 {
+	assert(colorPaletteModel);
+	this->colorPaletteModel = colorPaletteModel;
 	zoomFactor = 1;
 }
 
@@ -30,17 +32,6 @@ bool Image::open(const QString &fileName)
 		QMessageBox::critical(nullptr, "Error", "Failed to open image file \"" + fileName + "\".");
 		return false;
 	}
-
-	/*
-	QImage img = pixmap.toImage();
-	assert(!img.isNull());
-
-	QRgb *rowData = (QRgb *)img.scanLine(10);
-	rowData += 10;
-	*rowData = qRgb(255, 0, 0);
-
-	pixmap = QPixmap::fromImage(img);
-	*/
 
 	//QScrollArea *tagCloudScrollArea = new QScrollArea;
 	//tagCloudScrollArea->setWidget(tagCloudDisplay);
@@ -108,6 +99,37 @@ void Image::paintEvent(QPaintEvent*)
 
 	QPainter painter(this);
 	painter.drawPixmap(0, 0, pixmap->scaled(pixmap->width() * zoomFactor, pixmap->height() * zoomFactor));
+}
+
+void Image::mouseMoveEvent(QMouseEvent *event)
+{
+	assert(event);
+
+	if(event->buttons() != Qt::LeftButton)
+		return;
+
+	assert(zoomFactor > 0);
+	int x = event->localPos().x() / zoomFactor;
+	int y = event->localPos().y() / zoomFactor;
+
+	if (x < 0 || x >= width() || y < 0 || y >= height())
+		return;
+
+	assert(pixmap);
+	assert(!pixmap->isNull());
+	QImage img = pixmap->toImage();
+	assert(!img.isNull());
+
+	QRgb *rowData = (QRgb*)img.scanLine(y);
+	rowData += x;
+	assert(colorPaletteModel);
+	*rowData = colorPaletteModel->getSelectedColor().rgb();
+
+	//qDebug() << "drawing pixel at " << x << ", " << y;
+
+	pixmap = new QPixmap(QPixmap::fromImage(img));
+
+	repaint();
 }
 
 void Image::wheelEvent(QWheelEvent *event)

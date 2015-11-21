@@ -3,15 +3,18 @@
 #include <QtWidgets>
 
 #include "Image.hpp"
+#include "../SideBar/ColorPaletteModel.hpp"
 
 class ImageArea : public QMdiArea
 {
 	Q_OBJECT
 
 public:
-	ImageArea();
+	ImageArea(ColorPaletteModel *colorPaletteModel);
 
 private:
+	ColorPaletteModel *colorPaletteModel;
+
 	Image *getCurrentImage();
 
 public slots:
