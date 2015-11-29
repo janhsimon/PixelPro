@@ -3,24 +3,24 @@
 #include <QtWidgets>
 
 #include "Image.hpp"
-#include "../SideBar/ColorPaletteModel.hpp"
+#include "ImageColorPaletteModel.hpp"
 
 class ImageArea : public QMdiArea
 {
 	Q_OBJECT
 
 public:
-	ImageArea(ColorPaletteModel *colorPaletteModel);
-
-private:
-	ColorPaletteModel *colorPaletteModel;
+	ImageArea();
 
 	Image *getCurrentImage();
 
 public slots:
-	void newImage();
-	void openImage();
-	void saveImageAs();
+	void newProject();
+	void openProject();
+	void saveProject();
+	void saveProjectAs();
+	void importImage();
+	void exportImage();
 	void zoomInCurrentImage();
 	void zoomOutCurrentImage();
 };

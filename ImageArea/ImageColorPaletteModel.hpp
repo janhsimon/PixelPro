@@ -2,20 +2,27 @@
 
 #include <QtWidgets>
 
-class ColorPaletteModel
+//#include "ImageArea.hpp"
+
+class ImageColorPaletteModel : public QObject
 {
+	Q_OBJECT
+
 public:
 	const static unsigned short MAX_COLORS = 256;
 
-	ColorPaletteModel();
+	ImageColorPaletteModel();
 
-	QColor getColor(int i);
+	QColor getColor(unsigned short i);
 	QColor getSelectedColor();
+	void setSelectedColor(const QColor &color);
 	unsigned short getSelectedColorIndex();
 	void setSelectedColorIndex(unsigned short index);
+	unsigned short getColorIndexClosestToColor(const QColor &color);
 	void import(const QString &fileName);
 
 private:
+	//ImageArea *imageArea;
 	QColor colors[MAX_COLORS];
 	unsigned short selectedColor;
 

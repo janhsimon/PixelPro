@@ -2,21 +2,24 @@
 
 #include <QtWidgets>
 
-#include "../SideBar/ColorPaletteModel.hpp"
+#include "ImageModel.hpp"
 
 class Image : public QWidget
 {
 	Q_OBJECT
 
 public:
-	Image(ColorPaletteModel *colorPaletteModel);
+	Image();
+	~Image();
 
-	void newEmpty();
-	bool open(const QString &fileName);
-	void saveAs(const QString &fileName);
+	void newEmpty(unsigned int width, unsigned int height);
+	bool importFromImageFile(const QString &fileName);
+	void exportToImageFile(const QString &fileName);
 
 	void zoomIn();
 	void zoomOut();
+
+	ImageModel *getImageModel();
 
 protected:
 	virtual void paintEvent(QPaintEvent *event);
@@ -24,11 +27,12 @@ protected:
 	virtual void wheelEvent(QWheelEvent *event);
 
 private:
-	const int MAX_ZOOM_FACTOR = 16;
+	const unsigned int MAX_ZOOM_FACTOR = 16;
+	const unsigned int MIN_WINDOW_WIDTH = 256;
+	const unsigned int MIN_WINDOW_HEIGHT = 256;
 
-	ColorPaletteModel *colorPaletteModel;
-	QPixmap *pixmap;
-	int zoomFactor;
+	ImageModel *imageModel;
+	unsigned int zoomFactor;
 
 	void updateTitle();
 };

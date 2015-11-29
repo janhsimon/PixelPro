@@ -2,20 +2,19 @@
 
 #include <QtWidgets>
 
-#include "ColorPaletteRollOut.hpp"
-#include "DrawingToolsRollOut.hpp"
+#include "ColorPalette/ColorPaletteRollOut.hpp"
+#include "DrawingTools/DrawingToolsRollOut.hpp"
+#include "ImageArea/ImageArea.hpp"
 
 class SideBar : public QWidget
 {
 	Q_OBJECT
 
 public:
-	SideBar();
+	SideBar(ImageArea *imageArea);
 	~SideBar();
 
 	DrawingToolsRollOut *getDrawingToolsRollOut();
-
-	ColorPaletteModel *getColorPaletteModel();
 	ColorPaletteRollOut *getColorPaletteRollOut();
 
 private:
@@ -24,7 +23,6 @@ private:
 	QPushButton *drawingToolsRollOutButton;
 	DrawingToolsRollOut *drawingToolsRollOut;
 
-	ColorPaletteModel *colorPaletteModel;
 	QPushButton *colorPaletteRollOutButton;
 	ColorPaletteRollOut *colorPaletteRollOut;
 

@@ -1,19 +1,20 @@
 #include <assert.h>
 
 #include "SideBar.hpp"
-#include "ColorPaletteModel.hpp"
+//#include "ColorPalette/ColorPaletteModel.hpp"
 
-SideBar::SideBar()
+SideBar::SideBar(ImageArea *imageArea)
 {
+	assert(imageArea);
+
 	drawingToolsRollOutButton = new QPushButton(QIcon("E:/Qt Projects/PixelPro/images/new.png"), tr("Drawing Tools"));
 	drawingToolsRollOutButton->setStyleSheet("Text-align:left");
 	drawingToolsRollOut = new DrawingToolsRollOut();
 	connect(drawingToolsRollOutButton, SIGNAL(clicked()), this, SLOT(toggleDrawingToolsRollOut()));
 
-	colorPaletteModel = new ColorPaletteModel();
 	colorPaletteRollOutButton = new QPushButton(QIcon("E:/Qt Projects/PixelPro/images/open.png"), tr("Color Palette"));
 	colorPaletteRollOutButton->setStyleSheet("Text-align:left");
-	colorPaletteRollOut = new ColorPaletteRollOut(colorPaletteModel);
+	colorPaletteRollOut = new ColorPaletteRollOut(imageArea);
 	connect(colorPaletteRollOutButton, SIGNAL(clicked()), this, SLOT(toggleColorPaletteRollOut()));
 
 	tileGridRollOutButton = new QPushButton(QIcon("E:/Qt Projects/PixelPro/images/save.png"), tr("Tile Grid"));
@@ -43,9 +44,6 @@ SideBar::~SideBar()
 	assert(drawingToolsRollOutButton);
 	delete drawingToolsRollOutButton;
 
-	assert(colorPaletteModel);
-	delete colorPaletteModel;
-
 	assert(colorPaletteRollOut);
 	delete colorPaletteRollOut;
 
@@ -66,12 +64,6 @@ DrawingToolsRollOut *SideBar::getDrawingToolsRollOut()
 {
 	assert(drawingToolsRollOut);
 	return drawingToolsRollOut;
-}
-
-ColorPaletteModel *SideBar::getColorPaletteModel()
-{
-	assert(colorPaletteModel);
-	return colorPaletteModel;
 }
 
 ColorPaletteRollOut *SideBar::getColorPaletteRollOut()

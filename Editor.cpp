@@ -4,15 +4,20 @@
 
 Editor::Editor()
 {
-	sideBar = new SideBar();
+	imageArea = new ImageArea();
+	sideBar = new SideBar(imageArea);
 
-	//QScrollArea *toolBoxScrollArea = new QScrollArea();
-	//toolBoxScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	//toolBoxScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-	//toolBoxScrollArea->setWidget(toolBoxView);
-	//toolBoxScrollArea->setFixedWidth(256);
+	connect(imageArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(repaintColorPaletteSwatchArea()));
 
-	imageArea = new ImageArea(sideBar->getColorPaletteModel());
+	ColorPaletteRollOut *colorPaletteRollOut = sideBar->getColorPaletteRollOut();
+	assert(colorPaletteRollOut);
+	QColorDialog *colorDialog = colorPaletteRollOut->getColorDialog();
+	assert(colorDialog);
+	connect(colorDialog, SIGNAL(currentColorChanged(QColor)), this, SLOT(updateCurrentColorPaletteColor(QColor)));
+
+	ColorPaletteSwatchArea *colorPaletteSwatchArea = colorPaletteRollOut->getColorPaletteSwatchArea();
+	assert(colorPaletteSwatchArea);
+	connect(colorPaletteSwatchArea, SIGNAL(onDoubleClick()), colorPaletteRollOut, SLOT(editColor()));
 
 	splitter = new QSplitter();
 	splitter->addWidget(sideBar);
@@ -43,25 +48,37 @@ void Editor::createFileMenu()
 
 	fileMenu = menuBar()->addMenu(tr("&File"));
 
-	newAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/new.png"), tr("&New..."), this);
-	newAction->setShortcut(Qt::CTRL + Qt::Key_N);
-	connect(newAction, SIGNAL(triggered()), imageArea, SLOT(newImage()));
-	fileMenu->addAction(newAction);
+	newProjectAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/new.png"), tr("&New Project..."), this);
+	newProjectAction->setShortcut(Qt::CTRL + Qt::Key_N);
+	connect(newProjectAction, SIGNAL(triggered()), imageArea, SLOT(newProject()));
+	fileMenu->addAction(newProjectAction);
 
-	openAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/open.png"), tr("&Open..."), this);
-	openAction->setShortcut(Qt::CTRL + Qt::Key_O);
-	connect(openAction, SIGNAL(triggered()), imageArea, SLOT(openImage()));
-	fileMenu->addAction(openAction);
+	openProjectAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/open.png"), tr("&Open Project..."), this);
+	openProjectAction->setShortcut(Qt::CTRL + Qt::Key_O);
+	connect(openProjectAction, SIGNAL(triggered()), imageArea, SLOT(openProject()));
+	fileMenu->addAction(openProjectAction);
 
-	saveAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/save.png"), tr("&Save"), this);
-	saveAction->setShortcut(Qt::CTRL + Qt::Key_S);
-	//connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
-	fileMenu->addAction(saveAction);
+	saveProjectAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/save.png"), tr("&Save Project"), this);
+	saveProjectAction->setShortcut(Qt::CTRL + Qt::Key_S);
+	connect(saveProjectAction, SIGNAL(triggered()), imageArea, SLOT(saveProject()));
+	fileMenu->addAction(saveProjectAction);
 
-	saveAsAction = new QAction(tr("Save &As..."), this);
-	saveAsAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
-	connect(saveAsAction, SIGNAL(triggered()), imageArea, SLOT(saveImageAs()));
-	fileMenu->addAction(saveAsAction);
+	saveProjectAsAction = new QAction(tr("Save Project &As..."), this);
+	saveProjectAsAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
+	connect(saveProjectAsAction, SIGNAL(triggered()), imageArea, SLOT(saveProjectAs()));
+	fileMenu->addAction(saveProjectAsAction);
+
+	fileMenu->addSeparator();
+
+	importImageAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/open.png"), tr("&Import Image..."), this);
+	//importImageAction->setShortcut(Qt::CTRL + Qt::Key_I);
+	connect(importImageAction, SIGNAL(triggered()), imageArea, SLOT(importImage()));
+	fileMenu->addAction(importImageAction);
+
+	exportImageAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/save.png"), tr("&Export Image..."), this);
+	//exportImageAction->setShortcut(Qt::CTRL + Qt::Key_E);
+	connect(exportImageAction, SIGNAL(triggered()), imageArea, SLOT(exportImage()));
+	fileMenu->addAction(exportImageAction);
 
 	fileMenu->addSeparator();
 
@@ -78,10 +95,15 @@ void Editor::createColorPaletteMenu()
 
 	colorPaletteMenu = menuBar()->addMenu(tr("Color &Palette"));
 
-	loadColorPaletteAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/open.png"), tr("&Import..."), this);
-	loadColorPaletteAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_O);
-	connect(loadColorPaletteAction, SIGNAL(triggered()), sideBar->getColorPaletteRollOut(), SLOT(importColorPalette()));
-	colorPaletteMenu->addAction(loadColorPaletteAction);
+	importColorPaletteAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/open.png"), tr("&Import Color Palette..."), this);
+	//importColorPaletteAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_O);
+	connect(importColorPaletteAction, SIGNAL(triggered()), sideBar->getColorPaletteRollOut(), SLOT(importColorPalette()));
+	colorPaletteMenu->addAction(importColorPaletteAction);
+
+	exportColorPaletteAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/save.png"), tr("&Export Color Palette..."), this);
+	//exportColorPaletteAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_O);
+	connect(exportColorPaletteAction, SIGNAL(triggered()), sideBar->getColorPaletteRollOut(), SLOT(exportColorPalette()));
+	colorPaletteMenu->addAction(exportColorPaletteAction);
 }
 
 void Editor::createViewMenu()
@@ -100,6 +122,30 @@ void Editor::createViewMenu()
 	zoomOutAction->setShortcut(Qt::CTRL + Qt::Key_Minus);
 	connect(zoomOutAction, SIGNAL(triggered()), imageArea, SLOT(zoomOutCurrentImage()));
 	viewMenu->addAction(zoomOutAction);
+}
+
+void Editor::repaintColorPaletteSwatchArea()
+{
+	assert(sideBar);
+	ColorPaletteRollOut *colorPaletteRollOut = sideBar->getColorPaletteRollOut();
+	assert(colorPaletteRollOut);
+	ColorPaletteSwatchArea *colorPaletteSwatchArea = colorPaletteRollOut->getColorPaletteSwatchArea();
+	assert(colorPaletteSwatchArea);
+	colorPaletteSwatchArea->repaint();
+}
+
+void Editor::updateCurrentColorPaletteColor(const QColor &color)
+{
+	assert(imageArea);
+	Image *image = imageArea->getCurrentImage();
+	assert(image);
+	ImageModel *imageModel = image->getImageModel();
+	assert(imageModel);
+	ImageColorPaletteModel *imageColorPaletteModel = imageModel->getImageColorPaletteModel();
+	assert(imageColorPaletteModel);
+	imageColorPaletteModel->setSelectedColor(color);
+	image->repaint();
+	repaintColorPaletteSwatchArea();
 }
 
 int main(int argc, char *argv[])

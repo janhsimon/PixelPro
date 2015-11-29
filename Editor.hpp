@@ -17,14 +17,17 @@ private:
 	QSplitter *splitter;
 
 	QMenu *fileMenu;
-	QAction *newAction;
-	QAction *openAction;
-	QAction *saveAction;
-	QAction *saveAsAction;
+	QAction *newProjectAction;
+	QAction *openProjectAction;
+	QAction *saveProjectAction;
+	QAction *saveProjectAsAction;
+	QAction *importImageAction;
+	QAction *exportImageAction;
 	QAction *exitAction;
 
 	QMenu *colorPaletteMenu;
-	QAction *loadColorPaletteAction;
+	QAction *importColorPaletteAction;
+	QAction *exportColorPaletteAction;
 
 	QMenu *viewMenu;
 	QAction *zoomInAction;
@@ -33,4 +36,8 @@ private:
 	void createFileMenu();
 	void createColorPaletteMenu();
 	void createViewMenu();
+
+private slots:
+	void repaintColorPaletteSwatchArea();
+	void updateCurrentColorPaletteColor(const QColor &color);
 };

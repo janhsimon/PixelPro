@@ -14,20 +14,24 @@ TEMPLATE = app
 
 SOURCES +=\
     SideBar/SideBar.cpp \
-    SideBar/ColorPaletteRollOut.cpp \
     Editor.cpp \
-    SideBar/ColorPaletteSwatchArea.cpp \
     ImageArea/Image.cpp \
-    SideBar/ColorPaletteModel.cpp \
     ImageArea/ImageArea.cpp \
-    SideBar/DrawingToolsRollOut.cpp
+    SideBar/ColorPalette/ColorPaletteRollOut.cpp \
+    SideBar/ColorPalette/ColorPaletteSwatchArea.cpp \
+    SideBar/DrawingTools/DrawingToolsRollOut.cpp \
+    ImageArea/ImageModel.cpp \
+    ImageArea/ImageColorPaletteModel.cpp \
+    SideBar/DrawingTools/DrawingToolsModel.cpp
 
 HEADERS  += \
     SideBar/SideBar.hpp \
-    SideBar/ColorPaletteRollOut.hpp \
     Editor.hpp \
-    SideBar/ColorPaletteSwatchArea.hpp \
     ImageArea/Image.hpp \
-    SideBar/ColorPaletteModel.hpp \
     ImageArea/ImageArea.hpp \
-    SideBar/DrawingToolsRollOut.hpp
+    SideBar/ColorPalette/ColorPaletteRollOut.hpp \
+    SideBar/ColorPalette/ColorPaletteSwatchArea.hpp \
+    SideBar/DrawingTools/DrawingToolsRollOut.hpp \
+    ImageArea/ImageModel.hpp \
+    ImageArea/ImageColorPaletteModel.hpp \
+    SideBar/DrawingTools/DrawingToolsModel.hpp
