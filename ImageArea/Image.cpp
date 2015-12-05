@@ -71,15 +71,35 @@ bool Image::importFromImageFile(const QString &fileName)
 
 void Image::exportToImageFile(const QString &fileName)
 {
+	assert(imageModel);
+
+	unsigned char *imageData = new unsigned char[imageModel->getWidth() * imageModel->getHeight() * 3];
+
+	for (unsigned int y = 0; y < imageModel->getHeight(); ++y)
+	{
+		for (unsigned int x = 0; x < imageModel->getWidth(); ++x)
+		{
+			const QColor color = imageModel->getColorAt(x, y);
+
+			const unsigned char r = color.red();
+			const unsigned char g = color.green();
+			const unsigned char b = color.blue();
+
+			const unsigned int index = (y * imageModel->getWidth() + x) * 3;
+
+			imageData[index + 0] = r;
+			imageData[index + 1] = g;
+			imageData[index + 2] = b;
+		}
+	}
+
+	QPixmap pixmap = QPixmap::fromImage(QImage(imageData, imageModel->getWidth(), imageModel->getHeight(), QImage::Format_RGB888));
+
+	assert(!pixmap.isNull());
 	assert(!fileName.isNull() && !fileName.isEmpty());
 
-	/*
-	assert(pixmap);
-	assert(!pixmap->isNull());
-
-	if (!pixmap->save(fileName))
+	if (!pixmap.save(fileName))
 		QMessageBox::critical(nullptr, "Error", "Failed to save image file as \"" + fileName + "\".");
-	*/
 }
 
 void Image::zoomIn()
