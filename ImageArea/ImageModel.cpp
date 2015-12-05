@@ -106,6 +106,12 @@ QColor &ImageModel::getColorAt(unsigned int x, unsigned int y)
 	return imageColorPaletteModel->getColor(getDataAt(x, y));
 }
 
+void ImageModel::setSelectedColorToIndex(unsigned char index)
+{
+	assert(imageColorPaletteModel);
+	imageColorPaletteModel->setSelectedColorIndex(index);
+}
+
 ImageColorPaletteModel *ImageModel::getImageColorPaletteModel()
 {
 	assert(imageColorPaletteModel);

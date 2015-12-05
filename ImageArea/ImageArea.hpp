@@ -3,16 +3,24 @@
 #include <QtWidgets>
 
 #include "Image.hpp"
-#include "ImageColorPaletteModel.hpp"
+#include "../PreviewWindow/PreviewWindow.hpp"
+#include "../SideBar/ColorPalette/ColorPaletteSwatchArea.hpp"
+#include "../SideBar/DrawingTools/DrawingToolsModel.hpp"
 
 class ImageArea : public QMdiArea
 {
 	Q_OBJECT
 
 public:
-	ImageArea();
+	ImageArea(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingToolsModel *drawingToolsModel, PreviewWindow *previewWindow);
 
-	Image *getCurrentImage();
+	static Image *getCurrentImage();
+
+private:
+	DrawingToolsModel *drawingToolsModel;
+	ColorPaletteSwatchArea *colorPaletteSwatchArea;
+	PreviewWindow *previewWindow;
+	static Image *currentImage;
 
 public slots:
 	void newProject();
@@ -23,4 +31,7 @@ public slots:
 	void exportImage();
 	void zoomInCurrentImage();
 	void zoomOutCurrentImage();
+
+private slots:
+	void setCurrentImage(QMdiSubWindow *currentImage);
 };

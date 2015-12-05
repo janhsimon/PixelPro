@@ -6,31 +6,31 @@ DrawingToolsRollOut::DrawingToolsRollOut()
 {
 	drawingToolsModel = new DrawingToolsModel();
 
-	QPushButton *selectButton = new QPushButton(tr("Select"));
+	selectButton = new QPushButton(tr("Select"));
 	selectButton->setFixedSize(TOOL_BUTTON_SIZE, TOOL_BUTTON_SIZE);
 	selectButton->setCheckable(true);
 	selectButton->setChecked(false);
 	connect(selectButton, SIGNAL(clicked()), this, SLOT(selectButtonClicked()));
 
-	QPushButton *brushButton = new QPushButton(tr("Brush"));
+	brushButton = new QPushButton(tr("Brush"));
 	brushButton->setFixedSize(TOOL_BUTTON_SIZE, TOOL_BUTTON_SIZE);
 	brushButton->setCheckable(true);
 	brushButton->setChecked(true);
 	connect(brushButton, SIGNAL(clicked()), this, SLOT(brushButtonClicked()));
 
-	QPushButton *colorPickerButton = new QPushButton(tr("Color Picker"));
+	colorPickerButton = new QPushButton(tr("Color Picker"));
 	colorPickerButton->setFixedSize(TOOL_BUTTON_SIZE, TOOL_BUTTON_SIZE);
 	colorPickerButton->setCheckable(true);
 	colorPickerButton->setChecked(false);
 	connect(colorPickerButton, SIGNAL(clicked()), this, SLOT(colorPickerButtonClicked()));
 
-	QPushButton *rectangleButton = new QPushButton(tr("Rectangle"));
+	rectangleButton = new QPushButton(tr("Rectangle"));
 	rectangleButton->setFixedSize(TOOL_BUTTON_SIZE, TOOL_BUTTON_SIZE);
 	rectangleButton->setCheckable(true);
 	rectangleButton->setChecked(false);
 	connect(rectangleButton, SIGNAL(clicked()), this, SLOT(rectangleButtonClicked()));
 
-	QPushButton *circleButton = new QPushButton(tr("Circle"));
+	circleButton = new QPushButton(tr("Circle"));
 	circleButton->setFixedSize(TOOL_BUTTON_SIZE, TOOL_BUTTON_SIZE);
 	circleButton->setCheckable(true);
 	circleButton->setChecked(false);
@@ -60,27 +60,86 @@ DrawingToolsModel *DrawingToolsRollOut::getDrawingToolsModel()
 	return drawingToolsModel;
 }
 
+/*
+void DrawingToolsRollOut::keyReleaseEvent(QKeyEvent *event)
+{
+	assert(event);
+
+	if (event->key() == Qt::Key_1)
+		selectButtonClicked();
+	else if (event->key() == Qt::Key_2)
+		brushButtonClicked();
+	else if (event->key() == Qt::Key_3)
+		colorPickerButtonClicked();
+	else if (event->key() == Qt::Key_4)
+		rectangleButtonClicked();
+	else if (event->key() == Qt::Key_5)
+		circleButtonClicked();
+}
+*/
+
+QPushButton *DrawingToolsRollOut::getSelectButton()
+{
+	assert(selectButton);
+	return selectButton;
+}
+
+QPushButton *DrawingToolsRollOut::getBrushButton()
+{
+	assert(brushButton);
+	return brushButton;
+}
+
+QPushButton *DrawingToolsRollOut::getColorPickerButton()
+{
+	assert(colorPickerButton);
+	return colorPickerButton;
+}
+
+QPushButton *DrawingToolsRollOut::getRectangleButton()
+{
+	assert(rectangleButton);
+	return rectangleButton;
+}
+
+QPushButton *DrawingToolsRollOut::getCircleButton()
+{
+	assert(circleButton);
+	return circleButton;
+}
+
 void DrawingToolsRollOut::selectButtonClicked()
 {
 	QMessageBox::warning(nullptr, "Placeholder", "Select Button clicked");
+
+	//assert(drawingToolsModel);
+	//drawingToolsModel->setActiveDrawingTool(DrawingTool::SELECTION);
 }
 
 void DrawingToolsRollOut::brushButtonClicked()
 {
-	QMessageBox::warning(nullptr, "Placeholder", "Brush Button clicked");
+	assert(drawingToolsModel);
+	drawingToolsModel->setActiveDrawingTool(DrawingTool::BRUSH);
 }
 
 void DrawingToolsRollOut::colorPickerButtonClicked()
 {
-	QMessageBox::warning(nullptr, "Placeholder", "Color Picker Button clicked");
+	assert(drawingToolsModel);
+	drawingToolsModel->setActiveDrawingTool(DrawingTool::COLOR_PICKER);
 }
 
 void DrawingToolsRollOut::rectangleButtonClicked()
 {
 	QMessageBox::warning(nullptr, "Placeholder", "Rectangle Button clicked");
+
+	//assert(drawingToolsModel);
+	//drawingToolsModel->setActiveDrawingTool(DrawingTool::SELECTION);
 }
 
 void DrawingToolsRollOut::circleButtonClicked()
 {
 	QMessageBox::warning(nullptr, "Placeholder", "Circle Button clicked");
+
+	//assert(drawingToolsModel);
+	//drawingToolsModel->setActiveDrawingTool(DrawingTool::SELECTION);
 }

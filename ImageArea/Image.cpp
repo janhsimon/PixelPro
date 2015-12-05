@@ -2,8 +2,17 @@
 
 #include "Image.hpp"
 
-Image::Image()
+Image::Image(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingToolsModel *drawingToolsModel, PreviewWindow *previewWindow)
 {
+	assert(colorPaletteSwatchArea);
+	this->colorPaletteSwatchArea = colorPaletteSwatchArea;
+
+	assert(drawingToolsModel);
+	this->drawingToolsModel = drawingToolsModel;
+
+	assert(previewWindow);
+	this->previewWindow = previewWindow;
+
 	imageModel = new ImageModel();
 	zoomFactor = 1;
 }
@@ -30,9 +39,9 @@ void Image::newEmpty(unsigned int width, unsigned int height)
 
 bool Image::importFromImageFile(const QString &fileName)
 {
-	/*
 	assert(!fileName.isNull() && !fileName.isEmpty());
 
+	/*
 	QPixmap *pixmap = new QPixmap(fileName);
 
 	if (pixmap->isNull())
@@ -62,8 +71,9 @@ bool Image::importFromImageFile(const QString &fileName)
 
 void Image::exportToImageFile(const QString &fileName)
 {
-	/*
 	assert(!fileName.isNull() && !fileName.isEmpty());
+
+	/*
 	assert(pixmap);
 	assert(!pixmap->isNull());
 
@@ -112,47 +122,43 @@ ImageModel *Image::getImageModel()
 
 void Image::paintEvent(QPaintEvent*)
 {
-	/*
-	assert(pixmap);
-	assert(!pixmap->isNull());
-
-	QPainter painter(this);
-	painter.drawPixmap(0, 0, pixmap->scaled(pixmap->width() * zoomFactor, pixmap->height() * zoomFactor));
-	*/
-
 	assert(zoomFactor > 0);
-
-	const unsigned int WINDOW_WIDTH = width();
-	const unsigned int WINDOW_HEIGHT = height();
-	const unsigned int ORIGINAL_IMAGE_WIDTH = imageModel->getWidth();
-	const unsigned int ORIGINAL_IMAGE_HEIGHT = imageModel->getHeight();
-	const unsigned int SCALED_IMAGE_WIDTH = ORIGINAL_IMAGE_WIDTH * zoomFactor;
-	const unsigned int SCALED_IMAGE_HEIGHT = ORIGINAL_IMAGE_HEIGHT * zoomFactor;
-	const unsigned int CENTER_OFFSET_X = (WINDOW_WIDTH - SCALED_IMAGE_WIDTH) / 2;
-	const unsigned int CENTER_OFFSET_Y = (WINDOW_HEIGHT - SCALED_IMAGE_HEIGHT) / 2;
-
 	assert(imageModel);
+
+	const unsigned int windowWidth = width();
+	const unsigned int windowHeight = height();
+	const unsigned int originalImageWidth = imageModel->getWidth();
+	const unsigned int originalImageHeight = imageModel->getHeight();
+	const unsigned int scaledImageWidth = originalImageWidth * zoomFactor;
+	const unsigned int scaledImageHeight = originalImageHeight * zoomFactor;
+	const unsigned int centerOffsetX = (windowWidth - scaledImageWidth) / 2;
+	const unsigned int centerOffsetY = (windowHeight - scaledImageHeight) / 2;
 
 	QPainter painter(this);
 
 	painter.setPen(Qt::darkGray);
 	painter.setBrush(Qt::darkGray);
-	painter.drawRect(0, 0, width(), height());
+	painter.drawRect(0, 0, windowWidth, windowHeight);
 
-	for (unsigned int y = 0; y < ORIGINAL_IMAGE_HEIGHT; ++y)
+	for (unsigned int y = 0; y < originalImageWidth; ++y)
 	{
-		for (unsigned int x = 0; x < ORIGINAL_IMAGE_WIDTH; ++x)
+		for (unsigned int x = 0; x < originalImageHeight; ++x)
 		{
 			QColor color = imageModel->getColorAt(x, y);
 			painter.setPen(color);
 			painter.setBrush(color);
 
 			if (zoomFactor == 1)
-				painter.drawPoint(x + CENTER_OFFSET_X, y + CENTER_OFFSET_Y);
+				painter.drawPoint(x + centerOffsetX, y + centerOffsetY);
 			else
-				painter.drawRect(x * zoomFactor + CENTER_OFFSET_X, y * zoomFactor + CENTER_OFFSET_Y, zoomFactor, zoomFactor);
+				painter.drawRect(x * zoomFactor + centerOffsetX, y * zoomFactor + centerOffsetY, zoomFactor, zoomFactor);
 		}
 	}
+}
+
+void Image::mousePressEvent(QMouseEvent *event)
+{
+	mouseMoveEvent(event);
 }
 
 void Image::mouseMoveEvent(QMouseEvent *event)
@@ -162,40 +168,39 @@ void Image::mouseMoveEvent(QMouseEvent *event)
 	if(event->buttons() != Qt::LeftButton)
 		return;
 
-	const unsigned int WINDOW_WIDTH = width();
-	const unsigned int WINDOW_HEIGHT = height();
-	const unsigned int ORIGINAL_IMAGE_WIDTH = imageModel->getWidth();
-	const unsigned int ORIGINAL_IMAGE_HEIGHT = imageModel->getHeight();
-	const unsigned int SCALED_IMAGE_WIDTH = ORIGINAL_IMAGE_WIDTH * zoomFactor;
-	const unsigned int SCALED_IMAGE_HEIGHT = ORIGINAL_IMAGE_HEIGHT * zoomFactor;
-	const unsigned int CENTER_OFFSET_X = (WINDOW_WIDTH - SCALED_IMAGE_WIDTH) / 2;
-	const unsigned int CENTER_OFFSET_Y = (WINDOW_HEIGHT - SCALED_IMAGE_HEIGHT) / 2;
-
 	assert(zoomFactor > 0);
-	int x = (event->localPos().x() - CENTER_OFFSET_X) / zoomFactor;
-	int y = (event->localPos().y() - CENTER_OFFSET_Y) / zoomFactor;
+	assert(imageModel);
 
-	if (x < 0 || x >= width() || y < 0 || y >= height())
+	const unsigned int windowWidth = width();
+	const unsigned int windowHeight = height();
+	const unsigned int originalImageWidth = imageModel->getWidth();
+	const unsigned int originalImageHeight = imageModel->getHeight();
+	const unsigned int scaledImageWidth = originalImageWidth * zoomFactor;
+	const unsigned int scaledImageHeight = originalImageHeight * zoomFactor;
+	const unsigned int centerOffsetX = (windowWidth - scaledImageWidth) / 2;
+	const unsigned int centerOffsetY = (windowHeight - scaledImageHeight) / 2;
+
+	const unsigned int x = (event->localPos().x() - centerOffsetX) / zoomFactor;
+	const unsigned int y = (event->localPos().y() - centerOffsetY) / zoomFactor;
+
+	if (x < 0 || x >= originalImageWidth || y < 0 || y >= originalImageHeight)
 		return;
 
-	assert(imageModel);
-	imageModel->setDataToSelectedColorAt(x, y);
+	assert(drawingToolsModel);
+	if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::BRUSH)
+	{
+		imageModel->setDataToSelectedColorAt(x, y);
 
-	/*
-	assert(pixmap);
-	assert(!pixmap->isNull());
-	QImage img = pixmap->toImage();
-	assert(!img.isNull());
+		assert(previewWindow);
+		previewWindow->updatePreview();
+	}
+	else if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::COLOR_PICKER)
+	{
+		imageModel->setSelectedColorToIndex(imageModel->getDataAt(x, y));
 
-	QRgb *rowData = (QRgb*)img.scanLine(y);
-	rowData += x;
-	assert(colorPaletteModel);
-	*rowData = colorPaletteModel->getSelectedColor().rgb();
-
-	//qDebug() << "drawing pixel at " << x << ", " << y;
-
-	pixmap = new QPixmap(QPixmap::fromImage(img));
-	*/
+		assert(colorPaletteSwatchArea);
+		colorPaletteSwatchArea->repaint();
+	}
 
 	repaint();
 }

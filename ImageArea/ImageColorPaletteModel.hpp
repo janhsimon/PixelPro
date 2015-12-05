@@ -2,8 +2,6 @@
 
 #include <QtWidgets>
 
-//#include "ImageArea.hpp"
-
 class ImageColorPaletteModel : public QObject
 {
 	Q_OBJECT
@@ -22,7 +20,6 @@ public:
 	void import(const QString &fileName);
 
 private:
-	//ImageArea *imageArea;
 	QColor colors[MAX_COLORS];
 	unsigned short selectedColor;
 

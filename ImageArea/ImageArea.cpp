@@ -2,14 +2,28 @@
 
 #include "ImageArea.hpp"
 
-ImageArea::ImageArea()
+Image *ImageArea::currentImage = nullptr;
+
+ImageArea::ImageArea(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingToolsModel *drawingToolsModel, PreviewWindow *previewWindow)
 {
+	assert(colorPaletteSwatchArea);
+	this->colorPaletteSwatchArea = colorPaletteSwatchArea;
+
+	assert(drawingToolsModel);
+	this->drawingToolsModel = drawingToolsModel;
+
+	assert(previewWindow);
+	this->previewWindow = previewWindow;
+
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+	connect(this, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(setCurrentImage(QMdiSubWindow*)));
 }
 
 Image *ImageArea::getCurrentImage()
 {
+	/*
 	if (!currentSubWindow())
 		return nullptr;
 
@@ -19,11 +33,17 @@ Image *ImageArea::getCurrentImage()
 		return nullptr;
 
 	return currentImage;
+	*/
+
+	return currentImage;
 }
 
 void ImageArea::newProject()
 {
-	Image *image = new Image();
+	assert(colorPaletteSwatchArea);
+	assert(drawingToolsModel);
+	assert(previewWindow);
+	Image *image = new Image(colorPaletteSwatchArea, drawingToolsModel, previewWindow);
 	image->newEmpty(64, 64);
 	addSubWindow(image);
 	image->show();
@@ -51,7 +71,10 @@ void ImageArea::importImage()
 	if (fileName.isNull() || fileName.isEmpty())
 		return;
 
-	Image *image = new Image();
+	assert(colorPaletteSwatchArea);
+	assert(drawingToolsModel);
+	assert(previewWindow);
+	Image *image = new Image(colorPaletteSwatchArea, drawingToolsModel, previewWindow);
 
 	if (image->importFromImageFile(fileName))
 	{
@@ -89,4 +112,17 @@ void ImageArea::zoomOutCurrentImage()
 
 	if (currentImage)
 		currentImage->zoomOut();
+}
+
+void ImageArea::setCurrentImage(QMdiSubWindow *currentImage)
+{
+	if (!currentImage)
+		return;
+
+	Image *image = (Image*)currentImage->widget();
+
+	if (!image)
+		return;
+
+	this->currentImage = image;
 }

@@ -4,20 +4,14 @@
 
 Editor::Editor()
 {
-	imageArea = new ImageArea();
-	sideBar = new SideBar(imageArea);
+	previewWindow = new PreviewWindow(this);
+	previewWindow->setInitialPosition(QPoint(1920, 0));
 
-	connect(imageArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(repaintColorPaletteSwatchArea()));
+	createSideBar();
 
-	ColorPaletteRollOut *colorPaletteRollOut = sideBar->getColorPaletteRollOut();
-	assert(colorPaletteRollOut);
-	QColorDialog *colorDialog = colorPaletteRollOut->getColorDialog();
-	assert(colorDialog);
-	connect(colorDialog, SIGNAL(currentColorChanged(QColor)), this, SLOT(updateCurrentColorPaletteColor(QColor)));
-
-	ColorPaletteSwatchArea *colorPaletteSwatchArea = colorPaletteRollOut->getColorPaletteSwatchArea();
-	assert(colorPaletteSwatchArea);
-	connect(colorPaletteSwatchArea, SIGNAL(onDoubleClick()), colorPaletteRollOut, SLOT(editColor()));
+	assert(sideBar);
+	assert(previewWindow);
+	createImageArea(sideBar, previewWindow);
 
 	splitter = new QSplitter();
 	splitter->addWidget(sideBar);
@@ -37,8 +31,44 @@ Editor::~Editor()
 	assert(imageArea);
 	delete imageArea;
 
+	assert(previewWindow);
+	delete previewWindow;
+
 	assert(splitter);
 	delete splitter;
+}
+
+void Editor::createSideBar()
+{
+	sideBar = new SideBar();
+
+	ColorPaletteRollOut *colorPaletteRollOut = sideBar->getColorPaletteRollOut();
+	assert(colorPaletteRollOut);
+	QColorDialog *colorDialog = colorPaletteRollOut->getColorDialog();
+	assert(colorDialog);
+	connect(colorDialog, SIGNAL(currentColorChanged(QColor)), this, SLOT(updateCurrentColorPaletteColor(QColor)));
+
+	ColorPaletteSwatchArea *colorPaletteSwatchArea = colorPaletteRollOut->getColorPaletteSwatchArea();
+	assert(colorPaletteSwatchArea);
+	connect(colorPaletteSwatchArea, SIGNAL(onDoubleClick()), colorPaletteRollOut, SLOT(editColor()));
+}
+
+void Editor::createImageArea(SideBar *sideBar, PreviewWindow *previewWindow)
+{
+	ColorPaletteRollOut *colorPaletteRollOut = sideBar->getColorPaletteRollOut();
+	assert(colorPaletteRollOut);
+	ColorPaletteSwatchArea *colorPaletteSwatchArea = colorPaletteRollOut->getColorPaletteSwatchArea();
+	assert(colorPaletteSwatchArea);
+
+	DrawingToolsRollOut *drawingToolsRollOut = sideBar->getDrawingToolsRollOut();
+	assert(drawingToolsRollOut);
+	DrawingToolsModel *drawingToolsModel = drawingToolsRollOut->getDrawingToolsModel();
+	assert(drawingToolsModel);
+
+	assert(previewWindow);
+	imageArea = new ImageArea(colorPaletteSwatchArea, drawingToolsModel, previewWindow);
+	connect(imageArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(repaintColorPaletteSwatchArea()));
+	connect(imageArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), previewWindow, SLOT(updatePreview()));
 }
 
 void Editor::createFileMenu()
@@ -71,19 +101,19 @@ void Editor::createFileMenu()
 	fileMenu->addSeparator();
 
 	importImageAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/open.png"), tr("&Import Image..."), this);
-	//importImageAction->setShortcut(Qt::CTRL + Qt::Key_I);
+	importImageAction->setShortcut(Qt::CTRL + Qt::Key_I);
 	connect(importImageAction, SIGNAL(triggered()), imageArea, SLOT(importImage()));
 	fileMenu->addAction(importImageAction);
 
 	exportImageAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/save.png"), tr("&Export Image..."), this);
-	//exportImageAction->setShortcut(Qt::CTRL + Qt::Key_E);
+	exportImageAction->setShortcut(Qt::CTRL + Qt::Key_E);
 	connect(exportImageAction, SIGNAL(triggered()), imageArea, SLOT(exportImage()));
 	fileMenu->addAction(exportImageAction);
 
 	fileMenu->addSeparator();
 
 	exitAction = new QAction(tr("E&xit"), this);
-	exitAction->setShortcut(Qt::CTRL + Qt::Key_X);
+	exitAction->setShortcut(Qt::CTRL + Qt::Key_Q);
 	connect(exitAction, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
 	fileMenu->addAction(exitAction);
 }
@@ -124,6 +154,62 @@ void Editor::createViewMenu()
 	viewMenu->addAction(zoomOutAction);
 }
 
+void Editor::keyPressEvent(QKeyEvent *event)
+{
+	assert(event);
+
+	assert(sideBar);
+	DrawingToolsRollOut *drawingToolsRollOut = sideBar->getDrawingToolsRollOut();
+	assert(drawingToolsRollOut);
+
+	if (event->key() == Qt::Key_Control)
+	{
+		QPushButton *colorPickerButton = drawingToolsRollOut->getColorPickerButton();
+		assert(colorPickerButton);
+		colorPickerButton->click();
+	}
+}
+
+void Editor::keyReleaseEvent(QKeyEvent *event)
+{
+	assert(event);
+
+	assert(sideBar);
+	DrawingToolsRollOut *drawingToolsRollOut = sideBar->getDrawingToolsRollOut();
+	assert(drawingToolsRollOut);
+
+	if (event->key() == Qt::Key_1)
+	{
+		QPushButton *selectButton = drawingToolsRollOut->getSelectButton();
+		assert(selectButton);
+		selectButton->click();
+	}
+	else if (event->key() == Qt::Key_2 || event->key() == Qt::Key_Control)
+	{
+		QPushButton *brushButton = drawingToolsRollOut->getBrushButton();
+		assert(brushButton);
+		brushButton->click();
+	}
+	else if (event->key() == Qt::Key_3)
+	{
+		QPushButton *colorPickerButton = drawingToolsRollOut->getColorPickerButton();
+		assert(colorPickerButton);
+		colorPickerButton->click();
+	}
+	else if (event->key() == Qt::Key_4)
+	{
+		QPushButton *rectangleButton = drawingToolsRollOut->getRectangleButton();
+		assert(rectangleButton);
+		rectangleButton->click();
+	}
+	else if (event->key() == Qt::Key_5)
+	{
+		QPushButton *circleButton = drawingToolsRollOut->getCircleButton();
+		assert(circleButton);
+		circleButton->click();
+	}
+}
+
 void Editor::repaintColorPaletteSwatchArea()
 {
 	assert(sideBar);
@@ -146,6 +232,12 @@ void Editor::updateCurrentColorPaletteColor(const QColor &color)
 	imageColorPaletteModel->setSelectedColor(color);
 	image->repaint();
 	repaintColorPaletteSwatchArea();
+}
+
+PreviewWindow *Editor::getPreviewWindow()
+{
+	assert(previewWindow);
+	return previewWindow;
 }
 
 int main(int argc, char *argv[])

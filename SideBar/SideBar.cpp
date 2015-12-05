@@ -1,12 +1,9 @@
 #include <assert.h>
 
 #include "SideBar.hpp"
-//#include "ColorPalette/ColorPaletteModel.hpp"
 
-SideBar::SideBar(ImageArea *imageArea)
+SideBar::SideBar()
 {
-	assert(imageArea);
-
 	drawingToolsRollOutButton = new QPushButton(QIcon("E:/Qt Projects/PixelPro/images/new.png"), tr("Drawing Tools"));
 	drawingToolsRollOutButton->setStyleSheet("Text-align:left");
 	drawingToolsRollOut = new DrawingToolsRollOut();
@@ -14,7 +11,7 @@ SideBar::SideBar(ImageArea *imageArea)
 
 	colorPaletteRollOutButton = new QPushButton(QIcon("E:/Qt Projects/PixelPro/images/open.png"), tr("Color Palette"));
 	colorPaletteRollOutButton->setStyleSheet("Text-align:left");
-	colorPaletteRollOut = new ColorPaletteRollOut(imageArea);
+	colorPaletteRollOut = new ColorPaletteRollOut();
 	connect(colorPaletteRollOutButton, SIGNAL(clicked()), this, SLOT(toggleColorPaletteRollOut()));
 
 	tileGridRollOutButton = new QPushButton(QIcon("E:/Qt Projects/PixelPro/images/save.png"), tr("Tile Grid"));

@@ -16,6 +16,8 @@ public:
 	void setDataAt(unsigned int x, unsigned y, unsigned char colorIndex);
 	void setDataToSelectedColorAt(unsigned int x, unsigned y);
 	QColor &getColorAt(unsigned int x, unsigned int y);
+	void setSelectedColorToIndex(unsigned char index);
+
 	ImageColorPaletteModel *getImageColorPaletteModel();
 
 	inline unsigned int getWidth() { return width; }

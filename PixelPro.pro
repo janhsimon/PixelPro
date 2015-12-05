@@ -22,7 +22,8 @@ SOURCES +=\
     SideBar/DrawingTools/DrawingToolsRollOut.cpp \
     ImageArea/ImageModel.cpp \
     ImageArea/ImageColorPaletteModel.cpp \
-    SideBar/DrawingTools/DrawingToolsModel.cpp
+    SideBar/DrawingTools/DrawingToolsModel.cpp \
+    PreviewWindow/PreviewWindow.cpp
 
 HEADERS  += \
     SideBar/SideBar.hpp \
@@ -34,4 +35,5 @@ HEADERS  += \
     SideBar/DrawingTools/DrawingToolsRollOut.hpp \
     ImageArea/ImageModel.hpp \
     ImageArea/ImageColorPaletteModel.hpp \
-    SideBar/DrawingTools/DrawingToolsModel.hpp
+    SideBar/DrawingTools/DrawingToolsModel.hpp \
+    PreviewWindow/PreviewWindow.hpp

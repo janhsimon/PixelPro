@@ -1,20 +1,16 @@
 #include <assert.h>
 
 #include "ColorPaletteSwatchArea.hpp"
+#include "../../ImageArea/ImageArea.hpp"
 
-ColorPaletteSwatchArea::ColorPaletteSwatchArea(ImageArea *imageArea)
+ColorPaletteSwatchArea::ColorPaletteSwatchArea()
 {
-	assert(imageArea);
-	this->imageArea = imageArea;
-
 	setFixedSize(225, 225);
 }
 
 void ColorPaletteSwatchArea::paintEvent(QPaintEvent*)
 {
-	assert(imageArea);
-
-	Image *currentImage = imageArea->getCurrentImage();
+	Image *currentImage = ImageArea::getCurrentImage();
 
 	if (!currentImage)
 	{
@@ -89,9 +85,7 @@ void ColorPaletteSwatchArea::mouseReleaseEvent(QMouseEvent *event)
 	if (x < 0 || x >= w ||y < 0 || y >= h)
 		return;
 
-	assert(imageArea);
-
-	Image *currentImage = imageArea->getCurrentImage();
+	Image *currentImage = ImageArea::getCurrentImage();
 
 	if (!currentImage)
 		return;
@@ -122,9 +116,7 @@ void ColorPaletteSwatchArea::mouseDoubleClickEvent(QMouseEvent *event)
 	if (event->button() != Qt::LeftButton)
 		return;
 
-	assert(imageArea);
-
-	Image *currentImage = imageArea->getCurrentImage();
+	Image *currentImage = ImageArea::getCurrentImage();
 
 	if (!currentImage)
 		return;

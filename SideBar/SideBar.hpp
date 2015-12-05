@@ -4,14 +4,13 @@
 
 #include "ColorPalette/ColorPaletteRollOut.hpp"
 #include "DrawingTools/DrawingToolsRollOut.hpp"
-#include "ImageArea/ImageArea.hpp"
 
 class SideBar : public QWidget
 {
 	Q_OBJECT
 
 public:
-	SideBar(ImageArea *imageArea);
+	SideBar();
 	~SideBar();
 
 	DrawingToolsRollOut *getDrawingToolsRollOut();

@@ -13,10 +13,25 @@ public:
 
 	DrawingToolsModel *getDrawingToolsModel();
 
+	QPushButton *getSelectButton();
+	QPushButton *getBrushButton();
+	QPushButton *getColorPickerButton();
+	QPushButton *getRectangleButton();
+	QPushButton *getCircleButton();
+
+//protected:
+	//void keyReleaseEvent(QKeyEvent *event);
+
 private:
 	static const int TOOL_BUTTON_SIZE = 45;
 
 	DrawingToolsModel *drawingToolsModel;
+
+	QPushButton *selectButton;
+	QPushButton *brushButton;
+	QPushButton *colorPickerButton;
+	QPushButton *rectangleButton;
+	QPushButton *circleButton;
 
 private slots:
 	void selectButtonClicked();

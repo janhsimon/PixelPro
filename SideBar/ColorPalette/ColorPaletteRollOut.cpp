@@ -1,13 +1,11 @@
 #include <assert.h>
 
 #include "ColorPaletteRollOut.hpp"
+#include "../../ImageArea/ImageArea.hpp"
 
-ColorPaletteRollOut::ColorPaletteRollOut(ImageArea *imageArea)
+ColorPaletteRollOut::ColorPaletteRollOut()
 {
-	assert(imageArea);
-	this->imageArea = imageArea;
-
-	colorPaletteSwatchArea = new ColorPaletteSwatchArea(imageArea);
+	colorPaletteSwatchArea = new ColorPaletteSwatchArea();
 
 	QPushButton *editButton = new QPushButton(tr("Edit"));
 	connect(editButton, SIGNAL(clicked()), this, SLOT(editColor()));
@@ -74,9 +72,7 @@ QColorDialog *ColorPaletteRollOut::getColorDialog()
 
 void ColorPaletteRollOut::editColor()
 {
-	assert(imageArea);
-
-	Image *currentImage = imageArea->getCurrentImage();
+	Image *currentImage = ImageArea::getCurrentImage();
 
 	if (!currentImage)
 	{
@@ -98,8 +94,7 @@ void ColorPaletteRollOut::editColor()
 
 void ColorPaletteRollOut::importColorPalette()
 {
-	assert(imageArea);
-	Image *currentImage = imageArea->getCurrentImage();
+	Image *currentImage = ImageArea::getCurrentImage();
 
 	if (!currentImage)
 	{
