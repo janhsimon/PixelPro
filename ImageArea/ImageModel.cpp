@@ -2,8 +2,11 @@
 
 #include "ImageModel.hpp"
 
-ImageModel::ImageModel()
+ImageModel::ImageModel(ColorPaletteSwatchArea *colorPaletteSwatchArea)
 {
+	assert(colorPaletteSwatchArea);
+	this->colorPaletteSwatchArea = colorPaletteSwatchArea;
+
 	imageColorPaletteModel = new ImageColorPaletteModel();
 	data = nullptr;
 }
@@ -68,6 +71,9 @@ void ImageModel::setSelectedColorToIndex(unsigned char index)
 {
 	assert(imageColorPaletteModel);
 	imageColorPaletteModel->setSelectedColorIndex(index);
+
+	assert(colorPaletteSwatchArea);
+	colorPaletteSwatchArea->repaint();
 }
 
 ImageColorPaletteModel *ImageModel::getImageColorPaletteModel()

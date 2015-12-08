@@ -3,11 +3,12 @@
 #include <QtWidgets>
 
 #include "ImageColorPaletteModel.hpp"
+#include "../SideBar/ColorPalette/ColorPaletteSwatchArea.hpp"
 
 class ImageModel
 {
 public:
-	ImageModel();
+	ImageModel(ColorPaletteSwatchArea *colorPaletteSwatchArea);
 	~ImageModel();
 
 	bool newEmpty(unsigned int width, unsigned int height);
@@ -27,4 +28,5 @@ private:
 	unsigned int width, height;
 
 	ImageColorPaletteModel *imageColorPaletteModel;
+	ColorPaletteSwatchArea *colorPaletteSwatchArea;
 };

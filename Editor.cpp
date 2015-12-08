@@ -21,6 +21,7 @@ Editor::Editor()
 	createFileMenu();
 	createColorPaletteMenu();
 	createViewMenu();
+	createWindowMenu();
 }
 
 Editor::~Editor()
@@ -154,6 +155,19 @@ void Editor::createViewMenu()
 	viewMenu->addAction(zoomOutAction);
 }
 
+void Editor::createWindowMenu()
+{
+	assert(menuBar());
+	assert(imageArea);
+
+	windowMenu = menuBar()->addMenu(tr("&Window"));
+
+	closeWindowAction = new QAction(tr("&Close Window"), this);
+	closeWindowAction->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_C);
+	connect(closeWindowAction, SIGNAL(triggered()), imageArea, SLOT(closeActiveSubWindow()));
+	windowMenu->addAction(closeWindowAction);
+}
+
 void Editor::keyPressEvent(QKeyEvent *event)
 {
 	assert(event);
@@ -178,36 +192,55 @@ void Editor::keyReleaseEvent(QKeyEvent *event)
 	DrawingToolsRollOut *drawingToolsRollOut = sideBar->getDrawingToolsRollOut();
 	assert(drawingToolsRollOut);
 
-	if (event->key() == Qt::Key_1)
+	if (event->key() == Qt::Key_Q)
 	{
 		QPushButton *selectButton = drawingToolsRollOut->getSelectButton();
 		assert(selectButton);
 		selectButton->click();
 	}
-	else if (event->key() == Qt::Key_2 || event->key() == Qt::Key_Control)
+	else if (event->key() == Qt::Key_W || event->key() == Qt::Key_Control)
 	{
 		QPushButton *brushButton = drawingToolsRollOut->getBrushButton();
 		assert(brushButton);
 		brushButton->click();
 	}
-	else if (event->key() == Qt::Key_3)
+	else if (event->key() == Qt::Key_E)
 	{
 		QPushButton *colorPickerButton = drawingToolsRollOut->getColorPickerButton();
 		assert(colorPickerButton);
 		colorPickerButton->click();
 	}
-	else if (event->key() == Qt::Key_4)
+	else if (event->key() == Qt::Key_R)
 	{
 		QPushButton *rectangleButton = drawingToolsRollOut->getRectangleButton();
 		assert(rectangleButton);
 		rectangleButton->click();
 	}
-	else if (event->key() == Qt::Key_5)
+	else if (event->key() == Qt::Key_T)
 	{
 		QPushButton *circleButton = drawingToolsRollOut->getCircleButton();
 		assert(circleButton);
 		circleButton->click();
 	}
+
+	Image *currentImage = ImageArea::getCurrentImage();
+
+	if (currentImage)
+	{
+		ImageModel *imageModel = currentImage->getImageModel();
+		assert(imageModel);
+
+		if (event->key() == Qt::Key_0)
+			imageModel->setSelectedColorToIndex(9);
+		if (event->key() >= Qt::Key_1 && event->key() <= Qt::Key_9)
+			imageModel->setSelectedColorToIndex(event->key() - Qt::Key_1);
+	}
+}
+
+void Editor::closeEvent(QCloseEvent *event)
+{
+	if (QMessageBox::question(nullptr, "Close the editor?", "Are you sure want to close the editor?") == QMessageBox::No)
+		event->ignore();
 }
 
 void Editor::repaintColorPaletteSwatchArea()
@@ -232,6 +265,9 @@ void Editor::updateCurrentColorPaletteColor(const QColor &color)
 	imageColorPaletteModel->setSelectedColor(color);
 	image->repaint();
 	repaintColorPaletteSwatchArea();
+
+	assert(previewWindow);
+	previewWindow->repaint();
 }
 
 PreviewWindow *Editor::getPreviewWindow()

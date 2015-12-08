@@ -13,7 +13,7 @@ Image::Image(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingToolsModel *
 	assert(previewWindow);
 	this->previewWindow = previewWindow;
 
-	imageModel = new ImageModel();
+	imageModel = new ImageModel(colorPaletteSwatchArea);
 	zoomFactor = 1;
 }
 
@@ -223,12 +223,7 @@ void Image::mouseMoveEvent(QMouseEvent *event)
 		previewWindow->updatePreview();
 	}
 	else if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::COLOR_PICKER)
-	{
 		imageModel->setSelectedColorToIndex(imageModel->getDataAt(x, y));
-
-		assert(colorPaletteSwatchArea);
-		colorPaletteSwatchArea->repaint();
-	}
 
 	repaint();
 }
@@ -246,6 +241,12 @@ void Image::wheelEvent(QWheelEvent *event)
 		zoomIn();
 	else if (event->delta() < 0)
 		zoomOut();
+}
+
+void Image::closeEvent(QCloseEvent *event)
+{
+	if (QMessageBox::question(nullptr, "Save before closing?", "Are you sure want to close without saving?") == QMessageBox::No)
+		event->ignore();
 }
 
 void Image::updateTitle()

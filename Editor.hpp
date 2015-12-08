@@ -15,8 +15,9 @@ public:
 	PreviewWindow *getPreviewWindow();
 
 protected:
-	void keyPressEvent(QKeyEvent *event);
-	void keyReleaseEvent(QKeyEvent *event);
+	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void keyReleaseEvent(QKeyEvent *event);
+	virtual void closeEvent(QCloseEvent *event);
 
 private:
 	SideBar *sideBar;
@@ -42,11 +43,15 @@ private:
 	QAction *zoomInAction;
 	QAction *zoomOutAction;
 
+	QMenu *windowMenu;
+	QAction *closeWindowAction;
+
 	void createSideBar();
 	void createImageArea(SideBar *sideBar, PreviewWindow *previewWindow);
 	void createFileMenu();
 	void createColorPaletteMenu();
 	void createViewMenu();
+	void createWindowMenu();
 
 
 private slots:
