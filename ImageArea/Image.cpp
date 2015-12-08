@@ -41,30 +41,38 @@ bool Image::importFromImageFile(const QString &fileName)
 {
 	assert(!fileName.isNull() && !fileName.isEmpty());
 
-	/*
-	QPixmap *pixmap = new QPixmap(fileName);
+	QPixmap pixmap(fileName);
 
-	if (pixmap->isNull())
+	if (pixmap.isNull())
 	{
 		QMessageBox::critical(nullptr, "Error", "Failed to import image file \"" + fileName + "\".");
 		return false;
 	}
 
-	//QScrollArea *tagCloudScrollArea = new QScrollArea;
-	//tagCloudScrollArea->setWidget(tagCloudDisplay);
+	QImage image = pixmap.toImage();
+	assert(!image.isNull());
 
-	//assert(imageModel);
-	//assert(colorPaletteModel);
-	//if (!imageModel->openFromPixmap(*pixmap, colorPaletteModel))
-		//close();
+	assert(imageModel);
+	imageModel->newEmpty(image.width(), image.height());
 
-	delete pixmap;
+	ImageColorPaletteModel *imageColorPaletteModel = imageModel->getImageColorPaletteModel();
+	assert(imageColorPaletteModel);
 
-	setMinimumSize(pixmap->width(), pixmap->height());
+	for (unsigned int y = 0; y < imageModel->getHeight(); ++y)
+	{
+		for (unsigned int x = 0; x < imageModel->getWidth(); ++x)
+		{
+			QColor color = QColor(image.pixel(x, y));
+
+			unsigned short colorIndex = imageColorPaletteModel->getColorIndexClosestToColor(color/*QColor(r, g, b)*/);
+			imageModel->setDataAt(x, y, colorIndex);
+		}
+	}
+
+	setMinimumSize(imageModel->getWidth(), imageModel->getHeight());
 
 	setWindowTitle("[" + fileName.right(fileName.length() - fileName.lastIndexOf("/") - 1) + "] @");
 	updateTitle();
-	*/
 
 	return true;
 }
@@ -160,9 +168,9 @@ void Image::paintEvent(QPaintEvent*)
 	painter.setBrush(Qt::darkGray);
 	painter.drawRect(0, 0, windowWidth, windowHeight);
 
-	for (unsigned int y = 0; y < originalImageWidth; ++y)
+	for (unsigned int y = 0; y < originalImageHeight; ++y)
 	{
-		for (unsigned int x = 0; x < originalImageHeight; ++x)
+		for (unsigned int x = 0; x < originalImageWidth; ++x)
 		{
 			QColor color = imageModel->getColorAt(x, y);
 			painter.setPen(color);

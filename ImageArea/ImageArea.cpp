@@ -23,18 +23,6 @@ ImageArea::ImageArea(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingTool
 
 Image *ImageArea::getCurrentImage()
 {
-	/*
-	if (!currentSubWindow())
-		return nullptr;
-
-	Image *currentImage = (Image*)currentSubWindow()->widget();
-
-	if (!currentImage)
-		return nullptr;
-
-	return currentImage;
-	*/
-
 	return currentImage;
 }
 
@@ -117,7 +105,10 @@ void ImageArea::zoomOutCurrentImage()
 void ImageArea::setCurrentImage(QMdiSubWindow *currentImage)
 {
 	if (!currentImage)
+	{
+		this->currentImage = nullptr;
 		return;
+	}
 
 	Image *image = (Image*)currentImage->widget();
 

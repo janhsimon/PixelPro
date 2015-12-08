@@ -84,9 +84,9 @@ void PreviewWindow::paintEvent(QPaintEvent*)
 	painter.setBrush(Qt::darkGray);
 	painter.drawRect(0, 0, windowWidth, windowHeight);
 
-	for (unsigned int y = 0; y < originalImageWidth; ++y)
+	for (unsigned int y = 0; y < originalImageHeight; ++y)
 	{
-		for (unsigned int x = 0; x < originalImageHeight; ++x)
+		for (unsigned int x = 0; x < originalImageWidth; ++x)
 		{
 			QColor color = imageModel->getColorAt(x, y);
 			painter.setPen(color);

@@ -5,7 +5,7 @@
 Editor::Editor()
 {
 	previewWindow = new PreviewWindow(this);
-	previewWindow->setInitialPosition(QPoint(1920, 0));
+	//previewWindow->setInitialPosition(QPoint(1920, 0));
 
 	createSideBar();
 

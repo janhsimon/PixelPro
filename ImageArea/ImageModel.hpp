@@ -11,7 +11,6 @@ public:
 	~ImageModel();
 
 	bool newEmpty(unsigned int width, unsigned int height);
-	//bool openFromPixmap(const QPixmap &pixmap, ColorPaletteModel *colorPaletteModel);
 	unsigned char getDataAt(unsigned int x, unsigned int y);
 	void setDataAt(unsigned int x, unsigned y, unsigned char colorIndex);
 	void setDataToSelectedColorAt(unsigned int x, unsigned y);

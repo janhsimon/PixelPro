@@ -20,8 +20,6 @@ protected:
 
 private:
 	const unsigned int MAX_ZOOM_FACTOR = 4;
-	const unsigned int MIN_WINDOW_WIDTH = 256;
-	const unsigned int MIN_WINDOW_HEIGHT = 128;
 
 	unsigned int zoomFactor;
 
