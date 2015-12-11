@@ -5,7 +5,7 @@
 Editor::Editor()
 {
 	previewWindow = new PreviewWindow(this);
-	//previewWindow->setInitialPosition(QPoint(1920, 0));
+	previewWindow->setInitialPosition(QPoint(1920, 0));
 
 	createSideBar();
 
@@ -223,17 +223,20 @@ void Editor::keyReleaseEvent(QKeyEvent *event)
 		circleButton->click();
 	}
 
-	Image *currentImage = ImageArea::getCurrentImage();
+	ImageWindow *currentImageWindow = ImageArea::getCurrentImageWindow();
 
-	if (currentImage)
+	if (currentImageWindow)
 	{
-		ImageModel *imageModel = currentImage->getImageModel();
-		assert(imageModel);
-
 		if (event->key() == Qt::Key_0)
-			imageModel->setSelectedColorToIndex(9);
-		if (event->key() >= Qt::Key_1 && event->key() <= Qt::Key_9)
-			imageModel->setSelectedColorToIndex(event->key() - Qt::Key_1);
+		{
+			currentImageWindow->setSelectedColorIndex(9);
+			repaintColorPaletteSwatchArea();
+		}
+		else if (event->key() >= Qt::Key_1 && event->key() <= Qt::Key_9)
+		{
+			currentImageWindow->setSelectedColorIndex(event->key() - Qt::Key_1);
+			repaintColorPaletteSwatchArea();
+		}
 	}
 }
 
@@ -256,14 +259,12 @@ void Editor::repaintColorPaletteSwatchArea()
 void Editor::updateCurrentColorPaletteColor(const QColor &color)
 {
 	assert(imageArea);
-	Image *image = imageArea->getCurrentImage();
-	assert(image);
-	ImageModel *imageModel = image->getImageModel();
-	assert(imageModel);
-	ImageColorPaletteModel *imageColorPaletteModel = imageModel->getImageColorPaletteModel();
-	assert(imageColorPaletteModel);
-	imageColorPaletteModel->setSelectedColor(color);
-	image->repaint();
+	ImageWindow *imageWindow = imageArea->getCurrentImageWindow();
+	assert(imageWindow);
+
+	imageWindow->setSelectedColor(color);
+	imageWindow->repaint();
+
 	repaintColorPaletteSwatchArea();
 
 	assert(previewWindow);

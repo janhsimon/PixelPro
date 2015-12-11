@@ -19,9 +19,6 @@ public:
 	QPushButton *getRectangleButton();
 	QPushButton *getCircleButton();
 
-//protected:
-	//void keyReleaseEvent(QKeyEvent *event);
-
 private:
 	static const int TOOL_BUTTON_SIZE = 45;
 

@@ -60,24 +60,6 @@ DrawingToolsModel *DrawingToolsRollOut::getDrawingToolsModel()
 	return drawingToolsModel;
 }
 
-/*
-void DrawingToolsRollOut::keyReleaseEvent(QKeyEvent *event)
-{
-	assert(event);
-
-	if (event->key() == Qt::Key_1)
-		selectButtonClicked();
-	else if (event->key() == Qt::Key_2)
-		brushButtonClicked();
-	else if (event->key() == Qt::Key_3)
-		colorPickerButtonClicked();
-	else if (event->key() == Qt::Key_4)
-		rectangleButtonClicked();
-	else if (event->key() == Qt::Key_5)
-		circleButtonClicked();
-}
-*/
-
 QPushButton *DrawingToolsRollOut::getSelectButton()
 {
 	assert(selectButton);

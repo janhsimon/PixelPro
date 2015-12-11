@@ -2,7 +2,7 @@
 
 #include "ImageArea.hpp"
 
-Image *ImageArea::currentImage = nullptr;
+ImageWindow *ImageArea::currentImageWindow = nullptr;
 
 ImageArea::ImageArea(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingToolsModel *drawingToolsModel, PreviewWindow *previewWindow)
 {
@@ -18,12 +18,12 @@ ImageArea::ImageArea(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingTool
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
-	connect(this, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(setCurrentImage(QMdiSubWindow*)));
+	connect(this, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(setCurrentImageWindow(QMdiSubWindow*)));
 }
 
-Image *ImageArea::getCurrentImage()
+ImageWindow *ImageArea::getCurrentImageWindow()
 {
-	return currentImage;
+	return currentImageWindow;
 }
 
 void ImageArea::newProject()
@@ -31,7 +31,7 @@ void ImageArea::newProject()
 	assert(colorPaletteSwatchArea);
 	assert(drawingToolsModel);
 	assert(previewWindow);
-	Image *image = new Image(colorPaletteSwatchArea, drawingToolsModel, previewWindow);
+	ImageWindow *image = new ImageWindow(colorPaletteSwatchArea, drawingToolsModel, previewWindow);
 	image->newEmpty(64, 64);
 	addSubWindow(image);
 	image->show();
@@ -62,20 +62,20 @@ void ImageArea::importImage()
 	assert(colorPaletteSwatchArea);
 	assert(drawingToolsModel);
 	assert(previewWindow);
-	Image *image = new Image(colorPaletteSwatchArea, drawingToolsModel, previewWindow);
+	ImageWindow *imageWindow = new ImageWindow(colorPaletteSwatchArea, drawingToolsModel, previewWindow);
 
-	if (image->importFromImageFile(fileName))
+	if (imageWindow->importFromImageFile(fileName))
 	{
-		addSubWindow(image);
-		image->show();
+		addSubWindow(imageWindow);
+		imageWindow->show();
 	}
 }
 
 void ImageArea::exportImage()
 {
-	Image *currentImage = getCurrentImage();
+	ImageWindow *currentImageWindow = getCurrentImageWindow();
 
-	if (!currentImage)
+	if (!currentImageWindow)
 		return;
 
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Export Image"), "", tr("Portable Network Graphics (*.png)"));
@@ -83,37 +83,37 @@ void ImageArea::exportImage()
 	if (fileName.isNull() || fileName.isEmpty())
 		return;
 
-	currentImage->exportToImageFile(fileName);
+	currentImageWindow->exportToImageFile(fileName);
 }
 
 void ImageArea::zoomInCurrentImage()
 {
-	Image *currentImage = getCurrentImage();
+	ImageWindow *currentImageWindow = getCurrentImageWindow();
 
-	if (currentImage)
-		currentImage->zoomIn();
+	if (currentImageWindow)
+		currentImageWindow->zoomIn();
 }
 
 void ImageArea::zoomOutCurrentImage()
 {
-	Image *currentImage = getCurrentImage();
+	ImageWindow *currentImageWindow = getCurrentImageWindow();
 
-	if (currentImage)
-		currentImage->zoomOut();
+	if (currentImageWindow)
+		currentImageWindow->zoomOut();
 }
 
-void ImageArea::setCurrentImage(QMdiSubWindow *currentImage)
+void ImageArea::setCurrentImageWindow(QMdiSubWindow *currentImageWindow)
 {
-	if (!currentImage)
+	if (!currentImageWindow)
 	{
-		this->currentImage = nullptr;
+		this->currentImageWindow = nullptr;
 		return;
 	}
 
-	Image *image = (Image*)currentImage->widget();
+	ImageWindow *image = (ImageWindow*)currentImageWindow->widget();
 
 	if (!image)
 		return;
 
-	this->currentImage = image;
+	this->currentImageWindow = image;
 }

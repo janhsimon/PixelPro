@@ -2,27 +2,32 @@
 
 #include <QtWidgets>
 
-#include "ImageModel.hpp"
 #include "../PreviewWindow/PreviewWindow.hpp"
 #include "../SideBar/ColorPalette/ColorPaletteSwatchArea.hpp"
 #include "../SideBar/DrawingTools/DrawingToolsModel.hpp"
 
-class Image : public QWidget
+class ImageWindow : public QWidget
 {
 	Q_OBJECT
 
 public:
-	Image(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingToolsModel *drawingToolsModel, PreviewWindow *previewWindow);
-	~Image();
+	ImageWindow(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingToolsModel *drawingToolsModel, PreviewWindow *previewWindow);
+	~ImageWindow();
 
 	void newEmpty(unsigned int width, unsigned int height);
 	bool importFromImageFile(const QString &fileName);
 	void exportToImageFile(const QString &fileName);
 
+	void importColorPalette(const QString &fileName);
+
 	void zoomIn();
 	void zoomOut();
 
-	ImageModel *getImageModel();
+	QImage *getImage();
+	QColor getSelectedColor();
+	void setSelectedColor(const QColor &color);
+	unsigned char getSelectedColorIndex();
+	void setSelectedColorIndex(unsigned char index);
 
 protected:
 	virtual void paintEvent(QPaintEvent *event);
@@ -33,14 +38,16 @@ protected:
 
 private:
 	const unsigned int MAX_ZOOM_FACTOR = 16;
-	const unsigned int MIN_WINDOW_WIDTH = 256;
-	const unsigned int MIN_WINDOW_HEIGHT = 256;
+	const unsigned int MAX_COLORS_IN_PALETTE = 256;
 
-	ImageModel *imageModel;
+	QImage *image;
 	ColorPaletteSwatchArea *colorPaletteSwatchArea;
 	DrawingToolsModel *drawingToolsModel;
 	PreviewWindow *previewWindow;
-	unsigned int zoomFactor;
+	unsigned short zoomFactor;
+	unsigned char selectedColorIndex;
 
 	void updateTitle();
+	void clipColorPaletteToNearestPowerOfTwo();
+	void makeDefaultColorPalette();
 };

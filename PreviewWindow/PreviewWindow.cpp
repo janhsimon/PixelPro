@@ -48,12 +48,12 @@ void PreviewWindow::paintEvent(QPaintEvent*)
 {
 	assert(zoomFactor > 0);
 
-	Image *currentImage = ImageArea::getCurrentImage();
+	ImageWindow *currentImageWindow = ImageArea::getCurrentImageWindow();
 
-	if (!currentImage)
+	QPainter painter(this);
+
+	if (!currentImageWindow)
 	{
-		QPainter painter(this);
-
 		painter.setPen(QPen(Qt::lightGray));
 		painter.setBrush(QBrush(Qt::lightGray));
 		painter.drawRect(0, 0, width(), height());
@@ -66,38 +66,24 @@ void PreviewWindow::paintEvent(QPaintEvent*)
 		return;
 	}
 
-	ImageModel *imageModel = currentImage->getImageModel();
-	assert(imageModel);
+	QImage *image = currentImageWindow->getImage();
+	assert(image);
+
+	painter.setPen(Qt::darkGray);
+	painter.setBrush(Qt::darkGray);
+	painter.drawRect(0, 0, width(), height());
 
 	const unsigned int windowWidth = width();
 	const unsigned int windowHeight = height();
-	const unsigned int originalImageWidth = imageModel->getWidth();
-	const unsigned int originalImageHeight = imageModel->getHeight();
+	const unsigned int originalImageWidth = image->width();
+	const unsigned int originalImageHeight = image->height();
 	const unsigned int scaledImageWidth = originalImageWidth * zoomFactor;
 	const unsigned int scaledImageHeight = originalImageHeight * zoomFactor;
 	const unsigned int centerOffsetX = (windowWidth - scaledImageWidth) / 2;
 	const unsigned int centerOffsetY = (windowHeight - scaledImageHeight) / 2;
 
-	QPainter painter(this);
-
-	painter.setPen(Qt::darkGray);
-	painter.setBrush(Qt::darkGray);
-	painter.drawRect(0, 0, windowWidth, windowHeight);
-
-	for (unsigned int y = 0; y < originalImageHeight; ++y)
-	{
-		for (unsigned int x = 0; x < originalImageWidth; ++x)
-		{
-			QColor color = imageModel->getColorAt(x, y);
-			painter.setPen(color);
-			painter.setBrush(color);
-
-			if (zoomFactor == 1)
-				painter.drawPoint(x + centerOffsetX, y + centerOffsetY);
-			else
-				painter.drawRect(x * zoomFactor + centerOffsetX, y * zoomFactor + centerOffsetY, zoomFactor, zoomFactor);
-		}
-	}
+	QRect rect(centerOffsetX, centerOffsetY, scaledImageWidth, scaledImageHeight);
+	painter.drawImage(rect, *image);
 }
 
 void PreviewWindow::wheelEvent(QWheelEvent *event)
