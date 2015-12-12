@@ -45,6 +45,7 @@ private:
 
 	QMenu *windowMenu;
 	QAction *closeWindowAction;
+	QAction *showPreviewWindowAction;
 
 	void createSideBar();
 	void createImageArea(SideBar *sideBar, PreviewWindow *previewWindow);

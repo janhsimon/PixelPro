@@ -7,7 +7,7 @@ PreviewWindow::PreviewWindow(QWidget *parent) : QWidget(parent)
 {
 	setMinimumSize(320, 200);
 	setWindowTitle("Preview Window");
-	setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowStaysOnTopHint);
+	setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
 	show();
 
 	zoomFactor = 1;

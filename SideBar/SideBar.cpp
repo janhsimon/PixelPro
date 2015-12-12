@@ -85,6 +85,14 @@ ColorPaletteSwatchArea *SideBar::getColorPaletteSwatchArea()
 	return colorPaletteSwatchArea;
 }
 
+QColorDialog *SideBar::getColorPaletteColorDialog()
+{
+	assert(colorPaletteRollOut);
+	QColorDialog *colorDialog = colorPaletteRollOut->getColorDialog();
+	assert(colorDialog);
+	return colorDialog;
+}
+
 void SideBar::toggleDrawingToolsRollOut()
 {
 	assert(layout);

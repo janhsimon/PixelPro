@@ -17,6 +17,7 @@ public:
 	DrawingToolsModel *getDrawingToolsModel();
 	ColorPaletteRollOut *getColorPaletteRollOut();
 	ColorPaletteSwatchArea *getColorPaletteSwatchArea();
+	QColorDialog *getColorPaletteColorDialog();
 
 private:
 	QVBoxLayout *layout;

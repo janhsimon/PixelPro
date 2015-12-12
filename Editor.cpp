@@ -5,7 +5,7 @@
 Editor::Editor()
 {
 	previewWindow = new PreviewWindow(this);
-	previewWindow->setInitialPosition(QPoint(1920, 0));
+	//previewWindow->setInitialPosition(QPoint(1920, 0));
 
 	createSideBar();
 
@@ -43,14 +43,14 @@ void Editor::createSideBar()
 {
 	sideBar = new SideBar();
 
-	ColorPaletteRollOut *colorPaletteRollOut = sideBar->getColorPaletteRollOut();
-	assert(colorPaletteRollOut);
-	QColorDialog *colorDialog = colorPaletteRollOut->getColorDialog();
+	QColorDialog *colorDialog = sideBar->getColorPaletteColorDialog();
 	assert(colorDialog);
 	connect(colorDialog, SIGNAL(currentColorChanged(QColor)), this, SLOT(updateCurrentColorPaletteColor(QColor)));
 
 	ColorPaletteSwatchArea *colorPaletteSwatchArea = sideBar->getColorPaletteSwatchArea();
 	assert(colorPaletteSwatchArea);
+	ColorPaletteRollOut *colorPaletteRollOut = sideBar->getColorPaletteRollOut();
+	assert(colorPaletteRollOut);
 	connect(colorPaletteSwatchArea, SIGNAL(onDoubleClick()), colorPaletteRollOut, SLOT(editColor()));
 }
 
@@ -149,7 +149,7 @@ void Editor::createViewMenu()
 void Editor::createWindowMenu()
 {
 	assert(menuBar());
-	assert(imageArea);
+	assert(previewWindow);
 
 	windowMenu = menuBar()->addMenu(tr("&Window"));
 
@@ -157,6 +157,13 @@ void Editor::createWindowMenu()
 	closeWindowAction->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_C);
 	connect(closeWindowAction, SIGNAL(triggered()), imageArea, SLOT(closeActiveSubWindow()));
 	windowMenu->addAction(closeWindowAction);
+
+	windowMenu->addSeparator();
+
+	showPreviewWindowAction = new QAction(tr("&Show Preview Window"), this);
+	showPreviewWindowAction->setShortcut(Qt::CTRL + Qt::Key_P);
+	connect(showPreviewWindowAction, SIGNAL(triggered()), previewWindow, SLOT(show()));
+	windowMenu->addAction(showPreviewWindowAction);
 }
 
 void Editor::keyPressEvent(QKeyEvent *event)
