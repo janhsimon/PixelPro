@@ -28,6 +28,9 @@ public:
 	void setSelectedColor(const QColor &color);
 	unsigned char getSelectedColorIndex();
 	void setSelectedColorIndex(unsigned char index);
+	void hotkeySelectedColor(short hotkeyGroup);
+	void recallHotkeyedColor(short hotkeyGroup);
+	short getHotkeyGroupForColorIndex(unsigned char index);
 
 protected:
 	virtual void paintEvent(QPaintEvent *event);
@@ -37,8 +40,9 @@ protected:
 	virtual void closeEvent(QCloseEvent *event);
 
 private:
-	const unsigned int MAX_ZOOM_FACTOR = 16;
-	const unsigned int MAX_COLORS_IN_PALETTE = 256;
+	const static unsigned int MAX_ZOOM_FACTOR = 16;
+	const static unsigned int MAX_COLORS_IN_PALETTE = 256;
+	const static unsigned char MAX_COLOR_HOTKEYS = 10;
 
 	QImage *image;
 	ColorPaletteSwatchArea *colorPaletteSwatchArea;
@@ -46,6 +50,7 @@ private:
 	PreviewWindow *previewWindow;
 	unsigned short zoomFactor;
 	unsigned char selectedColorIndex;
+	short hotkeyedColors[MAX_COLOR_HOTKEYS];
 
 	void updateTitle();
 	void clipColorPaletteToNearestPowerOfTwo();

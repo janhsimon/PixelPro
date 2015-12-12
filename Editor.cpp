@@ -227,15 +227,32 @@ void Editor::keyReleaseEvent(QKeyEvent *event)
 
 	if (currentImageWindow)
 	{
+		ColorPaletteRollOut *colorPaletteRollOut = sideBar->getColorPaletteRollOut();
+		assert(colorPaletteRollOut);
+		ColorPaletteSwatchArea *colorPaletteSwatchArea = colorPaletteRollOut->getColorPaletteSwatchArea();
+		assert(colorPaletteSwatchArea);
+
+		Qt::KeyboardModifiers keyboardModifiers = QApplication::keyboardModifiers();
+
 		if (event->key() == Qt::Key_0)
 		{
-			currentImageWindow->setSelectedColorIndex(9);
-			repaintColorPaletteSwatchArea();
+			if (keyboardModifiers.testFlag(Qt::ControlModifier))
+				currentImageWindow->hotkeySelectedColor(0);
+			else
+				currentImageWindow->recallHotkeyedColor(0);
+
+			colorPaletteSwatchArea->repaint();
 		}
 		else if (event->key() >= Qt::Key_1 && event->key() <= Qt::Key_9)
 		{
-			currentImageWindow->setSelectedColorIndex(event->key() - Qt::Key_1);
-			repaintColorPaletteSwatchArea();
+			short numberKey = event->key() - Qt::Key_1 + 1;
+
+			if (keyboardModifiers.testFlag(Qt::ControlModifier))
+				currentImageWindow->hotkeySelectedColor(numberKey);
+			else
+				currentImageWindow->recallHotkeyedColor(numberKey);
+
+			colorPaletteSwatchArea->repaint();
 		}
 	}
 }

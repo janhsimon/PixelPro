@@ -16,6 +16,9 @@ ImageWindow::ImageWindow(ColorPaletteSwatchArea *colorPaletteSwatchArea, Drawing
 	image = nullptr;
 	zoomFactor = 1;
 	selectedColorIndex = 0;
+
+	for (int i = 0; i < MAX_COLOR_HOTKEYS; ++i)
+		hotkeyedColors[i] = (i == 0) ? 9 : i - 1;
 }
 
 ImageWindow::~ImageWindow()
@@ -224,6 +227,42 @@ void ImageWindow::setSelectedColorIndex(unsigned char index)
 {
 	assert(index >= 0 && index < image->colorCount());
 	selectedColorIndex = index;
+}
+
+
+void ImageWindow::hotkeySelectedColor(short hotkeyGroup)
+{
+	assert(hotkeyGroup < MAX_COLOR_HOTKEYS);
+
+	const unsigned char selectedColorIndex = getSelectedColorIndex();
+
+	for (int i = 0; i < MAX_COLOR_HOTKEYS; ++i)
+	{
+		if (hotkeyedColors[i] == selectedColorIndex)
+			hotkeyedColors[i] = -1;
+	}
+
+	hotkeyedColors[hotkeyGroup] = selectedColorIndex;
+}
+
+void ImageWindow::recallHotkeyedColor(short hotkeyGroup)
+{
+	assert(hotkeyGroup >= 0 && hotkeyGroup < MAX_COLOR_HOTKEYS);
+	short color = hotkeyedColors[hotkeyGroup];
+
+	if (color >= 0)
+		setSelectedColorIndex(color);
+}
+
+short ImageWindow::getHotkeyGroupForColorIndex(unsigned char index)
+{
+	for (int i = 0; i < MAX_COLOR_HOTKEYS; ++i)
+	{
+		if (index == hotkeyedColors[i])
+			return i;
+	}
+
+	return -1;
 }
 
 void ImageWindow::paintEvent(QPaintEvent*)
