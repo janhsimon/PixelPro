@@ -2,7 +2,7 @@
 
 #include "Image.hpp"
 
-Image::Image(unsigned int width, unsigned int height, SideBar *sideBar, PreviewWindow *previewWindow)
+Image::Image(unsigned int width, unsigned int height, SideBar *sideBar, PreviewWindow *previewWindow, QScrollArea *parentScrollArea)
 {
 	assert(width > 0 && height > 0);
 
@@ -11,6 +11,9 @@ Image::Image(unsigned int width, unsigned int height, SideBar *sideBar, PreviewW
 
 	assert(previewWindow);
 	this->previewWindow = previewWindow;
+
+	assert(parentScrollArea);
+	this->parentScrollArea = parentScrollArea;
 
 	image = new QImage(QSize(width, height), QImage::Format_Indexed8);
 
@@ -278,53 +281,69 @@ void Image::paintEvent(QPaintEvent*)
 
 void Image::mousePressEvent(QMouseEvent *event)
 {
-	mouseMoveEvent(event);
+	if (event->buttons() == Qt::MiddleButton)
+		lastMousePosition = event->globalPos();
+	else if (event->buttons() == Qt::LeftButton)
+		mouseMoveEvent(event);
 }
 
 void Image::mouseMoveEvent(QMouseEvent *event)
 {
 	assert(event);
 
-	if (event->buttons() != Qt::LeftButton)
-		return;
-
-	assert(image);
-	assert(zoomFactor >= 1 && zoomFactor <= MAX_ZOOM_FACTOR);
-
-	const unsigned int windowWidth = width();
-	const unsigned int windowHeight = height();
-	const unsigned int originalImageWidth = image->width();
-	const unsigned int originalImageHeight = image->height();
-	const unsigned int scaledImageWidth = originalImageWidth * zoomFactor;
-	const unsigned int scaledImageHeight = originalImageHeight * zoomFactor;
-	const unsigned int centerOffsetX = (windowWidth - scaledImageWidth) / 2;
-	const unsigned int centerOffsetY = (windowHeight - scaledImageHeight) / 2;
-
-	const unsigned int x = (event->localPos().x() - centerOffsetX) / zoomFactor;
-	const unsigned int y = (event->localPos().y() - centerOffsetY) / zoomFactor;
-
-	if (x < 0 || x >= originalImageWidth || y < 0 || y >= originalImageHeight)
-		return;
-
-	assert(sideBar);
-	DrawingToolsModel *drawingToolsModel = sideBar->getDrawingToolsModel();
-	assert(drawingToolsModel);
-
-	if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::BRUSH)
+	if (event->buttons() == Qt::MiddleButton)
 	{
-		image->setPixel(x, y, getSelectedColorIndex());
-		repaint();
+		QPoint delta(event->globalPos() - lastMousePosition);
 
-		assert(previewWindow);
-		previewWindow->repaint();
+		assert(parentScrollArea);
+		QScrollBar *scrollBarX = parentScrollArea->horizontalScrollBar();
+		QScrollBar *scrollBarY = parentScrollArea->verticalScrollBar();
+
+		scrollBarX->setValue(scrollBarX->value() - delta.x());
+		scrollBarY->setValue(scrollBarY->value() - delta.y());
+
+		lastMousePosition = event->globalPos();
 	}
-	else if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::COLOR_PICKER)
+	else if (event->buttons() == Qt::LeftButton)
 	{
-		setSelectedColorIndex(image->pixelIndex(x, y));
+		assert(image);
+		assert(zoomFactor >= 1 && zoomFactor <= MAX_ZOOM_FACTOR);
 
-		ColorPaletteSwatchArea *colorPaletteSwatchArea = sideBar->getColorPaletteSwatchArea();
-		assert(colorPaletteSwatchArea);
-		colorPaletteSwatchArea->repaint();
+		const unsigned int windowWidth = width();
+		const unsigned int windowHeight = height();
+		const unsigned int originalImageWidth = image->width();
+		const unsigned int originalImageHeight = image->height();
+		const unsigned int scaledImageWidth = originalImageWidth * zoomFactor;
+		const unsigned int scaledImageHeight = originalImageHeight * zoomFactor;
+		const unsigned int centerOffsetX = (windowWidth - scaledImageWidth) / 2;
+		const unsigned int centerOffsetY = (windowHeight - scaledImageHeight) / 2;
+
+		const unsigned int x = (event->localPos().x() - centerOffsetX) / zoomFactor;
+		const unsigned int y = (event->localPos().y() - centerOffsetY) / zoomFactor;
+
+		if (x < 0 || x >= originalImageWidth || y < 0 || y >= originalImageHeight)
+			return;
+
+		assert(sideBar);
+		DrawingToolsModel *drawingToolsModel = sideBar->getDrawingToolsModel();
+		assert(drawingToolsModel);
+
+		if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::BRUSH)
+		{
+			image->setPixel(x, y, getSelectedColorIndex());
+			repaint();
+
+			assert(previewWindow);
+			previewWindow->repaint();
+		}
+		else if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::COLOR_PICKER)
+		{
+			setSelectedColorIndex(image->pixelIndex(x, y));
+
+			ColorPaletteSwatchArea *colorPaletteSwatchArea = sideBar->getColorPaletteSwatchArea();
+			assert(colorPaletteSwatchArea);
+			colorPaletteSwatchArea->repaint();
+		}
 	}
 }
 

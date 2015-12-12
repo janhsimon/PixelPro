@@ -10,9 +10,14 @@ PreviewWindow::PreviewWindow(QWidget *parent) : QWidget(parent)
 	setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
 	show();
 
-	zoomFactor = 1;
+	//zoomFactor = 1;
+
+	scrollArea = new QScrollArea();
+	scrollArea->setAlignment(Qt::AlignCenter);
+	scrollArea->setBackgroundRole(QPalette::Dark);
 }
 
+/*
 void PreviewWindow::setInitialPosition(const QPoint &position)
 {
 	move((position.x() - width()) - 80, position.y() + 53);
@@ -43,10 +48,11 @@ void PreviewWindow::zoomOut()
 
 	repaint();
 }
+*/
 
 void PreviewWindow::paintEvent(QPaintEvent*)
 {
-	assert(zoomFactor > 0);
+	//assert(zoomFactor > 0);
 
 	Image *currentImage = ImageArea::getCurrentImage();
 
@@ -69,6 +75,7 @@ void PreviewWindow::paintEvent(QPaintEvent*)
 	QImage *image = currentImage->getImage();
 	assert(image);
 
+	/*
 	painter.setPen(Qt::darkGray);
 	painter.setBrush(Qt::darkGray);
 	painter.drawRect(0, 0, width(), height());
@@ -81,11 +88,16 @@ void PreviewWindow::paintEvent(QPaintEvent*)
 	const unsigned int scaledImageHeight = originalImageHeight * zoomFactor;
 	const unsigned int centerOffsetX = (windowWidth - scaledImageWidth) / 2;
 	const unsigned int centerOffsetY = (windowHeight - scaledImageHeight) / 2;
+	*/
 
-	QRect rect(centerOffsetX, centerOffsetY, scaledImageWidth, scaledImageHeight);
+	QRect rect(0, 0, image->width(), image->height());//(centerOffsetX, centerOffsetY, scaledImageWidth, scaledImageHeight);
 	painter.drawImage(rect, *image);
+
+	setMinimumSize(image->width(), image->height());
+	setMaximumSize(minimumSize());
 }
 
+/*
 void PreviewWindow::wheelEvent(QWheelEvent *event)
 {
 	assert(event);
@@ -100,6 +112,7 @@ void PreviewWindow::wheelEvent(QWheelEvent *event)
 	else if (event->delta() < 0)
 		zoomOut();
 }
+*/
 
 void PreviewWindow::updatePreview()
 {

@@ -10,7 +10,7 @@ class Image : public QWidget
 	Q_OBJECT
 
 public:
-	Image(unsigned int width, unsigned int height, SideBar *sideBar, PreviewWindow *previewWindow);
+	Image(unsigned int width, unsigned int height, SideBar *sideBar, PreviewWindow *previewWindow, QScrollArea *parentScrollArea);
 	~Image();
 
 	bool importFromImageFile(const QString &fileName);
@@ -44,9 +44,11 @@ private:
 	QImage *image;
 	SideBar *sideBar;
 	PreviewWindow *previewWindow;
+	QScrollArea *parentScrollArea;
 	unsigned short zoomFactor;
 	unsigned char selectedColorIndex;
 	short hotkeyedColors[MAX_COLOR_HOTKEYS];
+	QPoint lastMousePosition;
 
 	void clipColorPaletteToNearestPowerOfTwo();
 	void makeDefaultColorPalette();

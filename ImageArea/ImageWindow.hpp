@@ -3,6 +3,7 @@
 #include <QtWidgets>
 
 #include "Image.hpp"
+#include "ImageScrollBarFilter.hpp"
 #include "../PreviewWindow/PreviewWindow.hpp"
 #include "../SideBar/SideBar.hpp"
 
@@ -17,11 +18,12 @@ public:
 	Image *getImage();
 
 protected:
-	virtual void wheelEvent(QWheelEvent *event);
 	virtual void closeEvent(QCloseEvent *event);
 
 private:
+	QScrollArea *scrollArea;
 	Image *image;
+	ImageScrollBarFilter *imageScrollBarFilter;
 	SideBar *sideBar;
 	PreviewWindow *previewWindow;
 

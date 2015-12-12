@@ -22,7 +22,8 @@ SOURCES +=\
     SideBar/DrawingTools/DrawingToolsModel.cpp \
     PreviewWindow/PreviewWindow.cpp \
     ImageArea/ImageWindow.cpp \
-    ImageArea/Image.cpp
+    ImageArea/Image.cpp \
+    ImageArea/ImageScrollBarFilter.cpp
 
 HEADERS  += \
     SideBar/SideBar.hpp \
@@ -34,4 +35,5 @@ HEADERS  += \
     SideBar/DrawingTools/DrawingToolsModel.hpp \
     PreviewWindow/PreviewWindow.hpp \
     ImageArea/ImageWindow.hpp \
-    ImageArea/Image.hpp
+    ImageArea/Image.hpp \
+    ImageArea/ImageScrollBarFilter.hpp

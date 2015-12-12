@@ -9,19 +9,20 @@ class PreviewWindow : public QWidget
 public:
 	PreviewWindow(QWidget *parent);
 
-	void setInitialPosition(const QPoint &position);
+	//void setInitialPosition(const QPoint &position);
 
-	void zoomIn();
-	void zoomOut();
+	//void zoomIn();
+	//void zoomOut();
 
 protected:
 	virtual void paintEvent(QPaintEvent *event);
-	virtual void wheelEvent(QWheelEvent *event);
+	//virtual void wheelEvent(QWheelEvent *event);
 
 private:
-	const unsigned int MAX_ZOOM_FACTOR = 4;
+	//const unsigned int MAX_ZOOM_FACTOR = 4;
 
-	unsigned int zoomFactor;
+	QScrollArea *scrollArea;
+	//unsigned int zoomFactor;
 
 public slots:
 	void updatePreview();
