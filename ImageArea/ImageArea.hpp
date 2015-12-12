@@ -14,6 +14,7 @@ public:
 	ImageArea(SideBar *sideBar, PreviewWindow *previewWindow);
 
 	static ImageWindow *getCurrentImageWindow();
+	static Image *getCurrentImage();
 
 private:
 	SideBar *sideBar;

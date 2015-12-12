@@ -72,25 +72,25 @@ QColorDialog *ColorPaletteRollOut::getColorDialog()
 
 void ColorPaletteRollOut::editColor()
 {
-	ImageWindow *currentImageWindow = ImageArea::getCurrentImageWindow();
+	Image *currentImage = ImageArea::getCurrentImage();
 
-	if (!currentImageWindow)
+	if (!currentImage)
 	{
 		QMessageBox::critical(nullptr, "Error", "Create a new project or import an image before editing a color in the color palette.");
 		return;
 	}
 
 	assert(colorDialog);
-	colorDialog->setWindowTitle("Edit Color (Index #" + QString::number(currentImageWindow->getSelectedColorIndex()) + ")");
-	colorDialog->setCurrentColor(currentImageWindow->getSelectedColor());
+	colorDialog->setWindowTitle("Edit Color (Index #" + QString::number(currentImage->getSelectedColorIndex()) + ")");
+	colorDialog->setCurrentColor(currentImage->getSelectedColor());
 	colorDialog->open();
 }
 
 void ColorPaletteRollOut::importColorPalette()
 {
-	ImageWindow *currentImageWindow = ImageArea::getCurrentImageWindow();
+	Image *currentImage = ImageArea::getCurrentImage();
 
-	if (!currentImageWindow)
+	if (!currentImage)
 	{
 		QMessageBox::critical(nullptr, "Error", "Create a new project or import an image before importing a color palette.");
 		return;
@@ -101,7 +101,7 @@ void ColorPaletteRollOut::importColorPalette()
 	if (fileName.isNull() || fileName.isEmpty())
 		return;
 
-	currentImageWindow->importColorPalette(fileName);
+	currentImage->importColorPalette(fileName);
 }
 
 void ColorPaletteRollOut::exportColorPalette()

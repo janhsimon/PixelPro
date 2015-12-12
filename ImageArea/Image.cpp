@@ -1,42 +1,16 @@
 #include <assert.h>
 
-#include "ImageWindow.hpp"
+#include "Image.hpp"
 
-ImageWindow::ImageWindow(SideBar *sideBar, PreviewWindow *previewWindow)
+Image::Image(unsigned int width, unsigned int height, SideBar *sideBar, PreviewWindow *previewWindow)
 {
+	assert(width > 0 && height > 0);
+
 	assert(sideBar);
 	this->sideBar = sideBar;
 
 	assert(previewWindow);
 	this->previewWindow = previewWindow;
-
-	image = new Image(64, 64, sideBar, previewWindow);
-
-	QScrollArea *scrollArea = new QScrollArea();
-	scrollArea->setBackgroundRole(QPalette::Dark);
-	scrollArea->setWidget(image);
-	scrollArea->setAlignment(Qt::AlignCenter);
-
-	QHBoxLayout *layout = new QHBoxLayout();
-	layout->setMargin(0);
-	layout->setSpacing(0);
-	layout->addWidget(scrollArea);
-	setLayout(layout);
-}
-
-ImageWindow::~ImageWindow()
-{
-	if (image)
-		delete image;
-}
-
-/*
-void ImageWindow::newEmpty(unsigned int width, unsigned int height)
-{
-	assert(width > 0 && height > 0);
-
-	if (image)
-		delete image;
 
 	image = new QImage(QSize(width, height), QImage::Format_Indexed8);
 
@@ -47,26 +21,20 @@ void ImageWindow::newEmpty(unsigned int width, unsigned int height)
 	}
 
 	makeDefaultColorPalette();
+	selectedColorIndex = 0;
 	image->fill(selectedColorIndex);
-
-	QScrollArea *scrollArea = new QScrollArea();
-	scrollArea->setBackgroundRole(QPalette::Dark);
-	scrollArea->setWidget(imageLabel);
-	scrollArea->setAlignment(Qt::AlignCenter);
-
-	QHBoxLayout *layout = new QHBoxLayout();
-	layout->setMargin(0);
-	layout->setSpacing(0);
-	layout->addWidget(scrollArea);
-	setLayout(layout);
-
-	setMinimumSize(width, height);
-	setWindowTitle("[New Project] @");
-	updateImageLabel();
-	updateTitle();
+	zoomFactor = 1;
+	updateWidgetSize();
+	resetColorPaletteHotkeys();
 }
 
-bool ImageWindow::importFromImageFile(const QString &fileName)
+Image::~Image()
+{
+	if (image)
+		delete image;
+}
+
+bool Image::importFromImageFile(const QString &fileName)
 {
 	assert(!fileName.isNull() && !fileName.isEmpty());
 
@@ -82,7 +50,21 @@ bool ImageWindow::importFromImageFile(const QString &fileName)
 	const unsigned int newHeight = importImage.height();
 
 	assert(newWidth > 0 && newHeight > 0);
-	newEmpty(newWidth, newHeight);
+
+	if (image)
+		delete image;
+
+	image = new QImage(QSize(newWidth, newHeight), QImage::Format_Indexed8);
+
+	if (image->isNull())
+	{
+		QMessageBox::critical(nullptr, "Error", "Failed to import image file \"" + fileName + "\".");
+		return false;
+	}
+
+	// temporary setting so that we can set pixel index data below
+	// will be overwritten afterwards with the color table we're building
+	image->setColorCount(256);
 
 	QVector<QRgb> newColorTable;
 	bool newColorTableIsFull = false;
@@ -127,21 +109,22 @@ bool ImageWindow::importFromImageFile(const QString &fileName)
 	image->setColorTable(newColorTable);
 	clipColorPaletteToNearestPowerOfTwo();
 
-	setMinimumSize(image->width(), image->height());
-	setWindowTitle("[" + fileName.right(fileName.length() - fileName.lastIndexOf("/") - 1) + "] @");
-	updateTitle();
+	selectedColorIndex = 0;
+	zoomFactor = 1;
+	updateWidgetSize();
+	resetColorPaletteHotkeys();
 
 	return true;
 }
 
-void ImageWindow::exportToImageFile(const QString &fileName)
+void Image::exportToImageFile(const QString &fileName)
 {
 	assert(image);
 	if (!image->save(fileName))
 		QMessageBox::critical(nullptr, "Error", "Failed to export image file to \"" + fileName + "\".");
 }
 
-void ImageWindow::importColorPalette(const QString &fileName)
+void Image::importColorPalette(const QString &fileName)
 {
 	QFile file(fileName);
 
@@ -188,7 +171,7 @@ void ImageWindow::importColorPalette(const QString &fileName)
 	resetColorPaletteHotkeys();
 }
 
-void ImageWindow::zoomIn()
+void Image::zoomIn()
 {
 	if (zoomFactor >= MAX_ZOOM_FACTOR)
 	{
@@ -197,12 +180,13 @@ void ImageWindow::zoomIn()
 	}
 
 	zoomFactor++;
+	assert(zoomFactor >= 1 && zoomFactor <= MAX_ZOOM_FACTOR);
 
-	updateTitle();
+	updateWidgetSize();
 	repaint();
 }
 
-void ImageWindow::zoomOut()
+void Image::zoomOut()
 {
 	if (zoomFactor <= 1)
 	{
@@ -211,42 +195,43 @@ void ImageWindow::zoomOut()
 	}
 
 	zoomFactor--;
+	assert(zoomFactor >= 1 && zoomFactor <= MAX_ZOOM_FACTOR);
 
-	updateTitle();
+	updateWidgetSize();
 	repaint();
 }
 
-QImage *ImageWindow::getImage()
+QImage *Image::getImage()
 {
 	assert(image);
 	return image;
 }
 
-QColor ImageWindow::getSelectedColor()
+QColor Image::getSelectedColor()
 {
 	assert(image);
 	return QColor(image->color(getSelectedColorIndex()));
 }
 
-void ImageWindow::setSelectedColor(const QColor &color)
+void Image::setSelectedColor(const QColor &color)
 {
 	assert(image);
 	image->setColor(getSelectedColorIndex(), color.rgb());
 }
 
-unsigned char ImageWindow::getSelectedColorIndex()
+unsigned char Image::getSelectedColorIndex()
 {
 	assert(selectedColorIndex >= 0 && selectedColorIndex < image->colorCount());
 	return selectedColorIndex;
 }
 
-void ImageWindow::setSelectedColorIndex(unsigned char index)
+void Image::setSelectedColorIndex(unsigned char index)
 {
 	assert(index >= 0 && index < image->colorCount());
 	selectedColorIndex = index;
 }
 
-void ImageWindow::hotkeySelectedColor(short hotkeyGroup)
+void Image::hotkeySelectedColor(short hotkeyGroup)
 {
 	assert(hotkeyGroup < MAX_COLOR_HOTKEYS);
 
@@ -261,7 +246,7 @@ void ImageWindow::hotkeySelectedColor(short hotkeyGroup)
 	hotkeyedColors[hotkeyGroup] = selectedColorIndex;
 }
 
-void ImageWindow::recallHotkeyedColor(short hotkeyGroup)
+void Image::recallHotkeyedColor(short hotkeyGroup)
 {
 	assert(hotkeyGroup >= 0 && hotkeyGroup < MAX_COLOR_HOTKEYS);
 	short color = hotkeyedColors[hotkeyGroup];
@@ -270,7 +255,7 @@ void ImageWindow::recallHotkeyedColor(short hotkeyGroup)
 		setSelectedColorIndex(color);
 }
 
-short ImageWindow::getHotkeyGroupForColorIndex(unsigned char index)
+short Image::getHotkeyGroupForColorIndex(unsigned char index)
 {
 	for (int i = 0; i < MAX_COLOR_HOTKEYS; ++i)
 	{
@@ -281,34 +266,22 @@ short ImageWindow::getHotkeyGroupForColorIndex(unsigned char index)
 	return -1;
 }
 
-void ImageWindow::paintEvent(QPaintEvent*)
+void Image::paintEvent(QPaintEvent*)
 {
 	assert(image);
+	assert(zoomFactor >= 1 && zoomFactor <= MAX_ZOOM_FACTOR);
 
 	QPainter painter(this);
-	painter.setPen(Qt::darkGray);
-	painter.setBrush(Qt::darkGray);
-	painter.drawRect(0, 0, width(), height());
-
-	const unsigned int windowWidth = width();
-	const unsigned int windowHeight = height();
-	const unsigned int originalImageWidth = image->width();
-	const unsigned int originalImageHeight = image->height();
-	const unsigned int scaledImageWidth = originalImageWidth * zoomFactor;
-	const unsigned int scaledImageHeight = originalImageHeight * zoomFactor;
-	const unsigned int centerOffsetX = (windowWidth - scaledImageWidth) / 2;
-	const unsigned int centerOffsetY = (windowHeight - scaledImageHeight) / 2;
-
-	QRect rect(centerOffsetX, centerOffsetY, scaledImageWidth, scaledImageHeight);
+	QRect rect(0, 0, image->width() * zoomFactor, image->height() * zoomFactor);
 	painter.drawImage(rect, *image);
 }
 
-void ImageWindow::mousePressEvent(QMouseEvent *event)
+void Image::mousePressEvent(QMouseEvent *event)
 {
 	mouseMoveEvent(event);
 }
 
-void ImageWindow::mouseMoveEvent(QMouseEvent *event)
+void Image::mouseMoveEvent(QMouseEvent *event)
 {
 	assert(event);
 
@@ -316,6 +289,7 @@ void ImageWindow::mouseMoveEvent(QMouseEvent *event)
 		return;
 
 	assert(image);
+	assert(zoomFactor >= 1 && zoomFactor <= MAX_ZOOM_FACTOR);
 
 	const unsigned int windowWidth = width();
 	const unsigned int windowHeight = height();
@@ -353,47 +327,8 @@ void ImageWindow::mouseMoveEvent(QMouseEvent *event)
 		colorPaletteSwatchArea->repaint();
 	}
 }
-*/
 
-Image *ImageWindow::getImage()
-{
-	assert(image);
-	return image;
-}
-
-void ImageWindow::wheelEvent(QWheelEvent *event)
-{
-	assert(event);
-
-	Qt::KeyboardModifiers keyboardModifiers = QApplication::keyboardModifiers();
-
-	if (!keyboardModifiers.testFlag(Qt::ControlModifier))
-		return;
-
-	assert(image);
-
-	if (event->delta() > 0)
-		image->zoomIn();
-	else if (event->delta() < 0)
-		image->zoomOut();
-}
-
-void ImageWindow::closeEvent(QCloseEvent *event)
-{
-	if (QMessageBox::question(nullptr, "Save before closing?", "Are you sure want to close without saving?") == QMessageBox::No)
-		event->ignore();
-}
-
-void ImageWindow::updateTitle()
-{
-	assert(image);
-	QString title = windowTitle().left(windowTitle().lastIndexOf("@") + 1);
-	title.append(QString::number(image->getZoomFactor()) + "x");
-	setWindowTitle(title);
-}
-
-/*
-void ImageWindow::clipColorPaletteToNearestPowerOfTwo()
+void Image::clipColorPaletteToNearestPowerOfTwo()
 {
 	assert(image);
 
@@ -407,7 +342,7 @@ void ImageWindow::clipColorPaletteToNearestPowerOfTwo()
 	}
 }
 
-void ImageWindow::makeDefaultColorPalette()
+void Image::makeDefaultColorPalette()
 {
 	image->setColorCount(16);
 
@@ -460,9 +395,16 @@ void ImageWindow::makeDefaultColorPalette()
 	image->setColor(15, color.rgb());
 }
 
-void ImageWindow::resetColorPaletteHotkeys()
+void Image::resetColorPaletteHotkeys()
 {
 	for (int i = 0; i < MAX_COLOR_HOTKEYS; ++i)
 		hotkeyedColors[i] = (i == 0) ? 9 : i - 1;
 }
-*/
+
+void Image::updateWidgetSize()
+{
+	assert(image);
+	assert(zoomFactor >= 1 && zoomFactor <= MAX_ZOOM_FACTOR);
+	setMinimumSize(image->width() * zoomFactor, image->height() * zoomFactor);
+	setMaximumSize(minimumSize());
+}

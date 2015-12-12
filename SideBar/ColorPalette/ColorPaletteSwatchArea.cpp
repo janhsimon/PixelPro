@@ -10,9 +10,9 @@ ColorPaletteSwatchArea::ColorPaletteSwatchArea()
 
 void ColorPaletteSwatchArea::paintEvent(QPaintEvent*)
 {
-	ImageWindow *currentImageWindow = ImageArea::getCurrentImageWindow();
+	Image *currentImage = ImageArea::getCurrentImage();
 
-	if (!currentImageWindow)
+	if (!currentImage)
 	{
 		QPainter painter(this);
 
@@ -28,7 +28,7 @@ void ColorPaletteSwatchArea::paintEvent(QPaintEvent*)
 		return;
 	}
 
-	QImage *image = currentImageWindow->getImage();
+	QImage *image = currentImage->getImage();
 	assert(image);
 
 	const int numColorSwatchesXY = sqrt(image->colorCount());
@@ -53,7 +53,7 @@ void ColorPaletteSwatchArea::paintEvent(QPaintEvent*)
 			painter.setBrush(QBrush(color));
 			painter.drawRect(x * w, y * h, w, h);
 
-			if (index == currentImageWindow->getSelectedColorIndex())
+			if (index == currentImage->getSelectedColorIndex())
 			{
 				painter.setBrush(QBrush(Qt::transparent));
 
@@ -64,7 +64,7 @@ void ColorPaletteSwatchArea::paintEvent(QPaintEvent*)
 				painter.drawRect(x * w + 1, y * h + 1, w - 3, h - 3);
 			}
 
-			short hotkeyGroupForColorIndex = currentImageWindow->getHotkeyGroupForColorIndex(index);
+			short hotkeyGroupForColorIndex = currentImage->getHotkeyGroupForColorIndex(index);
 
 			if (hotkeyGroupForColorIndex >= 0)
 			{
@@ -101,12 +101,12 @@ void ColorPaletteSwatchArea::mousePressEvent(QMouseEvent *event)
 	if (x < 0 || x >= w ||y < 0 || y >= h)
 		return;
 
-	ImageWindow *currentImageWindow = ImageArea::getCurrentImageWindow();
+	Image *currentImage = ImageArea::getCurrentImage();
 
-	if (!currentImageWindow)
+	if (!currentImage)
 		return;
 
-	QImage *image = currentImageWindow->getImage();
+	QImage *image = currentImage->getImage();
 	assert(image);
 
 	const int numColorSwatchesXY = sqrt(image->colorCount());
@@ -117,7 +117,7 @@ void ColorPaletteSwatchArea::mousePressEvent(QMouseEvent *event)
 	assert(h > 0);
 	const int clickRow = (int)(y * ((float)numColorSwatchesXY / h));
 
-	currentImageWindow->setSelectedColorIndex(clickRow * numColorSwatchesXY + clickColumn);
+	currentImage->setSelectedColorIndex(clickRow * numColorSwatchesXY + clickColumn);
 
 	repaint();
 }
@@ -139,9 +139,9 @@ void ColorPaletteSwatchArea::mouseDoubleClickEvent(QMouseEvent *event)
 	if (event->button() != Qt::LeftButton)
 		return;
 
-	ImageWindow *currentImageWindow = ImageArea::getCurrentImageWindow();
+	Image *currentImage = ImageArea::getCurrentImage();
 
-	if (!currentImageWindow)
+	if (!currentImage)
 		return;
 
 	emit onDoubleClick();

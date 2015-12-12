@@ -23,14 +23,24 @@ ImageWindow *ImageArea::getCurrentImageWindow()
 	return currentImageWindow;
 }
 
+Image *ImageArea::getCurrentImage()
+{
+	if (!currentImageWindow)
+		return nullptr;
+
+	Image *currentImage = currentImageWindow->getImage();
+	assert(currentImage);
+	return currentImage;
+}
+
 void ImageArea::newProject()
 {
 	assert(sideBar);
 	assert(previewWindow);
-	ImageWindow *image = new ImageWindow(sideBar, previewWindow);
-	image->newEmpty(64, 64);
-	addSubWindow(image);
-	image->show();
+	ImageWindow *imageWindow = new ImageWindow(sideBar, previewWindow);
+	assert(imageWindow);
+	addSubWindow(imageWindow);
+	imageWindow->show();
 }
 
 void ImageArea::openProject()
@@ -58,8 +68,11 @@ void ImageArea::importImage()
 	assert(sideBar);
 	assert(previewWindow);
 	ImageWindow *imageWindow = new ImageWindow(sideBar, previewWindow);
+	assert(imageWindow);
 
-	if (imageWindow->importFromImageFile(fileName))
+	Image *image = imageWindow->getImage();
+	assert(image);
+	if (image->importFromImageFile(fileName))
 	{
 		addSubWindow(imageWindow);
 		imageWindow->show();
@@ -68,9 +81,9 @@ void ImageArea::importImage()
 
 void ImageArea::exportImage()
 {
-	ImageWindow *currentImageWindow = getCurrentImageWindow();
+	Image *currentImage = getCurrentImage();
 
-	if (!currentImageWindow)
+	if (!currentImage)
 		return;
 
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Export Image"), "", tr("Portable Network Graphics (*.png)"));
@@ -78,23 +91,23 @@ void ImageArea::exportImage()
 	if (fileName.isNull() || fileName.isEmpty())
 		return;
 
-	currentImageWindow->exportToImageFile(fileName);
+	currentImage->exportToImageFile(fileName);
 }
 
 void ImageArea::zoomInCurrentImage()
 {
-	ImageWindow *currentImageWindow = getCurrentImageWindow();
+	Image *currentImage = getCurrentImage();
 
-	if (currentImageWindow)
-		currentImageWindow->zoomIn();
+	if (currentImage)
+		currentImage->zoomIn();
 }
 
 void ImageArea::zoomOutCurrentImage()
 {
-	ImageWindow *currentImageWindow = getCurrentImageWindow();
+	Image *currentImage = getCurrentImage();
 
-	if (currentImageWindow)
-		currentImageWindow->zoomOut();
+	if (currentImage)
+		currentImage->zoomOut();
 }
 
 void ImageArea::setCurrentImageWindow(QMdiSubWindow *currentImageWindow)

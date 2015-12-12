@@ -48,11 +48,11 @@ void PreviewWindow::paintEvent(QPaintEvent*)
 {
 	assert(zoomFactor > 0);
 
-	ImageWindow *currentImageWindow = ImageArea::getCurrentImageWindow();
+	Image *currentImage = ImageArea::getCurrentImage();
 
 	QPainter painter(this);
 
-	if (!currentImageWindow)
+	if (!currentImage)
 	{
 		painter.setPen(QPen(Qt::lightGray));
 		painter.setBrush(QBrush(Qt::lightGray));
@@ -66,7 +66,7 @@ void PreviewWindow::paintEvent(QPaintEvent*)
 		return;
 	}
 
-	QImage *image = currentImageWindow->getImage();
+	QImage *image = currentImage->getImage();
 	assert(image);
 
 	painter.setPen(Qt::darkGray);

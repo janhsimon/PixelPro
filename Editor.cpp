@@ -221,9 +221,9 @@ void Editor::keyReleaseEvent(QKeyEvent *event)
 		circleButton->click();
 	}
 
-	ImageWindow *currentImageWindow = ImageArea::getCurrentImageWindow();
+	Image *currentImage = ImageArea::getCurrentImage();
 
-	if (currentImageWindow)
+	if (currentImage)
 	{
 		ColorPaletteSwatchArea *colorPaletteSwatchArea = sideBar->getColorPaletteSwatchArea();
 		assert(colorPaletteSwatchArea);
@@ -233,9 +233,9 @@ void Editor::keyReleaseEvent(QKeyEvent *event)
 		if (event->key() == Qt::Key_0)
 		{
 			if (keyboardModifiers.testFlag(Qt::ControlModifier))
-				currentImageWindow->hotkeySelectedColor(0);
+				currentImage->hotkeySelectedColor(0);
 			else
-				currentImageWindow->recallHotkeyedColor(0);
+				currentImage->recallHotkeyedColor(0);
 
 			colorPaletteSwatchArea->repaint();
 		}
@@ -244,9 +244,9 @@ void Editor::keyReleaseEvent(QKeyEvent *event)
 			short numberKey = event->key() - Qt::Key_1 + 1;
 
 			if (keyboardModifiers.testFlag(Qt::ControlModifier))
-				currentImageWindow->hotkeySelectedColor(numberKey);
+				currentImage->hotkeySelectedColor(numberKey);
 			else
-				currentImageWindow->recallHotkeyedColor(numberKey);
+				currentImage->recallHotkeyedColor(numberKey);
 
 			colorPaletteSwatchArea->repaint();
 		}
@@ -270,11 +270,11 @@ void Editor::repaintColorPaletteSwatchArea()
 void Editor::updateCurrentColorPaletteColor(const QColor &color)
 {
 	assert(imageArea);
-	ImageWindow *imageWindow = imageArea->getCurrentImageWindow();
-	assert(imageWindow);
+	Image *currentImage = imageArea->getCurrentImage();
+	assert(currentImage);
 
-	imageWindow->setSelectedColor(color);
-	imageWindow->repaint();
+	currentImage->setSelectedColor(color);
+	currentImage->repaint();
 
 	repaintColorPaletteSwatchArea();
 
