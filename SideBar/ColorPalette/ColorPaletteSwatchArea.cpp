@@ -6,46 +6,7 @@
 ColorPaletteSwatchArea::ColorPaletteSwatchArea()
 {
 	setFixedSize(225, 225);
-
-	//for (int i = 0; i < MAX_COLOR_HOTKEYS; ++i)
-		//hotkeyedColors[i] = i;
 }
-
-/*
-void ColorPaletteSwatchArea::hotkeySelectedColor(short hotkeyGroup)
-{
-	assert(hotkeyGroup < MAX_COLOR_HOTKEYS);
-
-	ImageWindow *currentImageWindow = ImageArea::getCurrentImageWindow();
-
-	if (!currentImageWindow)
-		return;
-
-	const unsigned char selectedColorIndex = currentImageWindow->getSelectedColorIndex();
-
-	for (int i = 0; i < MAX_COLOR_HOTKEYS; ++i)
-	{
-		if (hotkeyedColors[i] == selectedColorIndex)
-			hotkeyedColors[i] = -1;
-	}
-
-	hotkeyedColors[hotkeyGroup] = selectedColorIndex;
-	repaint();
-}
-
-void ColorPaletteSwatchArea::recallHotkeyedColor(short hotkeyGroup)
-{
-	assert(hotkeyGroup >= 0 && hotkeyGroup < MAX_COLOR_HOTKEYS);
-
-	ImageWindow *currentImageWindow = ImageArea::getCurrentImageWindow();
-
-	if (!currentImageWindow)
-		return;
-
-	currentImageWindow->setSelectedColorIndex(hotkeyGroup);
-	repaint();
-}
-*/
 
 void ColorPaletteSwatchArea::paintEvent(QPaintEvent*)
 {

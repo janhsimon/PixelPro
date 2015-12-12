@@ -3,15 +3,14 @@
 #include <QtWidgets>
 
 #include "../PreviewWindow/PreviewWindow.hpp"
-#include "../SideBar/ColorPalette/ColorPaletteSwatchArea.hpp"
-#include "../SideBar/DrawingTools/DrawingToolsModel.hpp"
+#include "../SideBar/SideBar.hpp"
 
 class ImageWindow : public QWidget
 {
 	Q_OBJECT
 
 public:
-	ImageWindow(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingToolsModel *drawingToolsModel, PreviewWindow *previewWindow);
+	ImageWindow(SideBar *sideBar, PreviewWindow *previewWindow);
 	~ImageWindow();
 
 	void newEmpty(unsigned int width, unsigned int height);
@@ -45,8 +44,7 @@ private:
 	const static unsigned char MAX_COLOR_HOTKEYS = 10;
 
 	QImage *image;
-	ColorPaletteSwatchArea *colorPaletteSwatchArea;
-	DrawingToolsModel *drawingToolsModel;
+	SideBar *sideBar;
 	PreviewWindow *previewWindow;
 	unsigned short zoomFactor;
 	unsigned char selectedColorIndex;
@@ -55,4 +53,5 @@ private:
 	void updateTitle();
 	void clipColorPaletteToNearestPowerOfTwo();
 	void makeDefaultColorPalette();
+	void resetColorPaletteHotkeys();
 };

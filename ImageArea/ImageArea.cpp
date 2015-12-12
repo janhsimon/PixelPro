@@ -4,13 +4,10 @@
 
 ImageWindow *ImageArea::currentImageWindow = nullptr;
 
-ImageArea::ImageArea(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingToolsModel *drawingToolsModel, PreviewWindow *previewWindow)
+ImageArea::ImageArea(SideBar *sideBar, PreviewWindow *previewWindow)
 {
-	assert(colorPaletteSwatchArea);
-	this->colorPaletteSwatchArea = colorPaletteSwatchArea;
-
-	assert(drawingToolsModel);
-	this->drawingToolsModel = drawingToolsModel;
+	assert(sideBar);
+	this->sideBar = sideBar;
 
 	assert(previewWindow);
 	this->previewWindow = previewWindow;
@@ -28,10 +25,9 @@ ImageWindow *ImageArea::getCurrentImageWindow()
 
 void ImageArea::newProject()
 {
-	assert(colorPaletteSwatchArea);
-	assert(drawingToolsModel);
+	assert(sideBar);
 	assert(previewWindow);
-	ImageWindow *image = new ImageWindow(colorPaletteSwatchArea, drawingToolsModel, previewWindow);
+	ImageWindow *image = new ImageWindow(sideBar, previewWindow);
 	image->newEmpty(64, 64);
 	addSubWindow(image);
 	image->show();
@@ -59,10 +55,9 @@ void ImageArea::importImage()
 	if (fileName.isNull() || fileName.isEmpty())
 		return;
 
-	assert(colorPaletteSwatchArea);
-	assert(drawingToolsModel);
+	assert(sideBar);
 	assert(previewWindow);
-	ImageWindow *imageWindow = new ImageWindow(colorPaletteSwatchArea, drawingToolsModel, previewWindow);
+	ImageWindow *imageWindow = new ImageWindow(sideBar, previewWindow);
 
 	if (imageWindow->importFromImageFile(fileName))
 	{

@@ -14,7 +14,9 @@ public:
 	~SideBar();
 
 	DrawingToolsRollOut *getDrawingToolsRollOut();
+	DrawingToolsModel *getDrawingToolsModel();
 	ColorPaletteRollOut *getColorPaletteRollOut();
+	ColorPaletteSwatchArea *getColorPaletteSwatchArea();
 
 private:
 	QVBoxLayout *layout;

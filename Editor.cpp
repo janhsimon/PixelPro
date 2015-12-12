@@ -49,25 +49,16 @@ void Editor::createSideBar()
 	assert(colorDialog);
 	connect(colorDialog, SIGNAL(currentColorChanged(QColor)), this, SLOT(updateCurrentColorPaletteColor(QColor)));
 
-	ColorPaletteSwatchArea *colorPaletteSwatchArea = colorPaletteRollOut->getColorPaletteSwatchArea();
+	ColorPaletteSwatchArea *colorPaletteSwatchArea = sideBar->getColorPaletteSwatchArea();
 	assert(colorPaletteSwatchArea);
 	connect(colorPaletteSwatchArea, SIGNAL(onDoubleClick()), colorPaletteRollOut, SLOT(editColor()));
 }
 
 void Editor::createImageArea(SideBar *sideBar, PreviewWindow *previewWindow)
 {
-	ColorPaletteRollOut *colorPaletteRollOut = sideBar->getColorPaletteRollOut();
-	assert(colorPaletteRollOut);
-	ColorPaletteSwatchArea *colorPaletteSwatchArea = colorPaletteRollOut->getColorPaletteSwatchArea();
-	assert(colorPaletteSwatchArea);
-
-	DrawingToolsRollOut *drawingToolsRollOut = sideBar->getDrawingToolsRollOut();
-	assert(drawingToolsRollOut);
-	DrawingToolsModel *drawingToolsModel = drawingToolsRollOut->getDrawingToolsModel();
-	assert(drawingToolsModel);
-
+	assert(sideBar);
 	assert(previewWindow);
-	imageArea = new ImageArea(colorPaletteSwatchArea, drawingToolsModel, previewWindow);
+	imageArea = new ImageArea(sideBar, previewWindow);
 	connect(imageArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(repaintColorPaletteSwatchArea()));
 	connect(imageArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), previewWindow, SLOT(updatePreview()));
 }
@@ -227,9 +218,7 @@ void Editor::keyReleaseEvent(QKeyEvent *event)
 
 	if (currentImageWindow)
 	{
-		ColorPaletteRollOut *colorPaletteRollOut = sideBar->getColorPaletteRollOut();
-		assert(colorPaletteRollOut);
-		ColorPaletteSwatchArea *colorPaletteSwatchArea = colorPaletteRollOut->getColorPaletteSwatchArea();
+		ColorPaletteSwatchArea *colorPaletteSwatchArea = sideBar->getColorPaletteSwatchArea();
 		assert(colorPaletteSwatchArea);
 
 		Qt::KeyboardModifiers keyboardModifiers = QApplication::keyboardModifiers();
@@ -266,9 +255,7 @@ void Editor::closeEvent(QCloseEvent *event)
 void Editor::repaintColorPaletteSwatchArea()
 {
 	assert(sideBar);
-	ColorPaletteRollOut *colorPaletteRollOut = sideBar->getColorPaletteRollOut();
-	assert(colorPaletteRollOut);
-	ColorPaletteSwatchArea *colorPaletteSwatchArea = colorPaletteRollOut->getColorPaletteSwatchArea();
+	ColorPaletteSwatchArea *colorPaletteSwatchArea = sideBar->getColorPaletteSwatchArea();
 	assert(colorPaletteSwatchArea);
 	colorPaletteSwatchArea->repaint();
 }

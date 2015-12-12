@@ -2,13 +2,10 @@
 
 #include "ImageWindow.hpp"
 
-ImageWindow::ImageWindow(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingToolsModel *drawingToolsModel, PreviewWindow *previewWindow)
+ImageWindow::ImageWindow(SideBar *sideBar, PreviewWindow *previewWindow)
 {
-	assert(colorPaletteSwatchArea);
-	this->colorPaletteSwatchArea = colorPaletteSwatchArea;
-
-	assert(drawingToolsModel);
-	this->drawingToolsModel = drawingToolsModel;
+	assert(sideBar);
+	this->sideBar = sideBar;
 
 	assert(previewWindow);
 	this->previewWindow = previewWindow;
@@ -17,8 +14,7 @@ ImageWindow::ImageWindow(ColorPaletteSwatchArea *colorPaletteSwatchArea, Drawing
 	zoomFactor = 1;
 	selectedColorIndex = 0;
 
-	for (int i = 0; i < MAX_COLOR_HOTKEYS; ++i)
-		hotkeyedColors[i] = (i == 0) ? 9 : i - 1;
+	resetColorPaletteHotkeys();
 }
 
 ImageWindow::~ImageWindow()
@@ -169,6 +165,7 @@ void ImageWindow::importColorPalette(const QString &fileName)
 		image->setColor(colorIndex, color.rgb());
 
 	clipColorPaletteToNearestPowerOfTwo();
+	resetColorPaletteHotkeys();
 }
 
 void ImageWindow::zoomIn()
@@ -228,7 +225,6 @@ void ImageWindow::setSelectedColorIndex(unsigned char index)
 	assert(index >= 0 && index < image->colorCount());
 	selectedColorIndex = index;
 }
-
 
 void ImageWindow::hotkeySelectedColor(short hotkeyGroup)
 {
@@ -316,7 +312,10 @@ void ImageWindow::mouseMoveEvent(QMouseEvent *event)
 	if (x < 0 || x >= originalImageWidth || y < 0 || y >= originalImageHeight)
 		return;
 
+	assert(sideBar);
+	DrawingToolsModel *drawingToolsModel = sideBar->getDrawingToolsModel();
 	assert(drawingToolsModel);
+
 	if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::BRUSH)
 	{
 		image->setPixel(x, y, getSelectedColorIndex());
@@ -329,6 +328,7 @@ void ImageWindow::mouseMoveEvent(QMouseEvent *event)
 	{
 		setSelectedColorIndex(image->pixelIndex(x, y));
 
+		ColorPaletteSwatchArea *colorPaletteSwatchArea = sideBar->getColorPaletteSwatchArea();
 		assert(colorPaletteSwatchArea);
 		colorPaletteSwatchArea->repaint();
 	}
@@ -427,4 +427,10 @@ void ImageWindow::makeDefaultColorPalette()
 
 	color = Qt::darkCyan;
 	image->setColor(15, color.rgb());
+}
+
+void ImageWindow::resetColorPaletteHotkeys()
+{
+	for (int i = 0; i < MAX_COLOR_HOTKEYS; ++i)
+		hotkeyedColors[i] = (i == 0) ? 9 : i - 1;
 }

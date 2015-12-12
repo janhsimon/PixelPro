@@ -4,21 +4,19 @@
 
 #include "ImageWindow.hpp"
 #include "../PreviewWindow/PreviewWindow.hpp"
-#include "../SideBar/ColorPalette/ColorPaletteSwatchArea.hpp"
-#include "../SideBar/DrawingTools/DrawingToolsModel.hpp"
+#include "../SideBar/SideBar.hpp"
 
 class ImageArea : public QMdiArea
 {
 	Q_OBJECT
 
 public:
-	ImageArea(ColorPaletteSwatchArea *colorPaletteSwatchArea, DrawingToolsModel *drawingToolsModel, PreviewWindow *previewWindow);
+	ImageArea(SideBar *sideBar, PreviewWindow *previewWindow);
 
 	static ImageWindow *getCurrentImageWindow();
 
 private:
-	DrawingToolsModel *drawingToolsModel;
-	ColorPaletteSwatchArea *colorPaletteSwatchArea;
+	SideBar *sideBar;
 	PreviewWindow *previewWindow;
 	static ImageWindow *currentImageWindow;
 

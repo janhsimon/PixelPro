@@ -63,10 +63,26 @@ DrawingToolsRollOut *SideBar::getDrawingToolsRollOut()
 	return drawingToolsRollOut;
 }
 
+DrawingToolsModel *SideBar::getDrawingToolsModel()
+{
+	assert(drawingToolsRollOut);
+	DrawingToolsModel *drawingToolsModel = drawingToolsRollOut->getDrawingToolsModel();
+	assert(drawingToolsModel);
+	return drawingToolsModel;
+}
+
 ColorPaletteRollOut *SideBar::getColorPaletteRollOut()
 {
 	assert(colorPaletteRollOut);
 	return colorPaletteRollOut;
+}
+
+ColorPaletteSwatchArea *SideBar::getColorPaletteSwatchArea()
+{
+	assert(colorPaletteRollOut);
+	ColorPaletteSwatchArea *colorPaletteSwatchArea = colorPaletteRollOut->getColorPaletteSwatchArea();
+	assert(colorPaletteSwatchArea);
+	return colorPaletteSwatchArea;
 }
 
 void SideBar::toggleDrawingToolsRollOut()
