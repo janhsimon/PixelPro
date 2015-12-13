@@ -1,6 +1,7 @@
 #include <assert.h>
 
 #include "DrawingToolsRollOut.hpp"
+#include "../../ImageArea/ImageArea.hpp"
 
 DrawingToolsRollOut::DrawingToolsRollOut()
 {
@@ -102,12 +103,22 @@ void DrawingToolsRollOut::brushButtonClicked()
 {
 	assert(drawingToolsModel);
 	drawingToolsModel->setActiveDrawingTool(DrawingTool::BRUSH);
+
+	Image *image = ImageArea::getCurrentImage();
+
+	if (image)
+		image->setCursor(Qt::CrossCursor);
 }
 
 void DrawingToolsRollOut::colorPickerButtonClicked()
 {
 	assert(drawingToolsModel);
 	drawingToolsModel->setActiveDrawingTool(DrawingTool::COLOR_PICKER);
+
+	Image *image = ImageArea::getCurrentImage();
+
+	if (image)
+		image->setCursor(Qt::PointingHandCursor);
 }
 
 void DrawingToolsRollOut::rectangleButtonClicked()

@@ -29,6 +29,7 @@ Image::Image(unsigned int width, unsigned int height, SideBar *sideBar, PreviewW
 	zoomFactor = 1;
 	updateWidgetSize();
 	resetColorPaletteHotkeys();
+	setCursor(Qt::CrossCursor);
 }
 
 Image::~Image()
@@ -281,17 +282,21 @@ void Image::paintEvent(QPaintEvent*)
 
 void Image::mousePressEvent(QMouseEvent *event)
 {
-	if (event->buttons() == Qt::MiddleButton)
-		lastMousePosition = event->globalPos();
-	else if (event->buttons() == Qt::LeftButton)
+	if (event->button() == Qt::LeftButton)
 		mouseMoveEvent(event);
+	else if (event->button() == Qt::MiddleButton)
+	{
+		lastMousePosition = event->globalPos();
+		setCursor(Qt::ClosedHandCursor);
+		qDebug() << "press mid";
+	}
 }
 
 void Image::mouseMoveEvent(QMouseEvent *event)
 {
 	assert(event);
 
-	if (event->buttons() == Qt::MiddleButton)
+	if (event->buttons() & Qt::MiddleButton)
 	{
 		QPoint delta(event->globalPos() - lastMousePosition);
 
@@ -304,7 +309,7 @@ void Image::mouseMoveEvent(QMouseEvent *event)
 
 		lastMousePosition = event->globalPos();
 	}
-	else if (event->buttons() == Qt::LeftButton)
+	else if (event->buttons() & Qt::LeftButton)
 	{
 		assert(image);
 		assert(zoomFactor >= 1 && zoomFactor <= MAX_ZOOM_FACTOR);
@@ -344,6 +349,17 @@ void Image::mouseMoveEvent(QMouseEvent *event)
 			assert(colorPaletteSwatchArea);
 			colorPaletteSwatchArea->repaint();
 		}
+	}
+}
+
+void Image::mouseReleaseEvent(QMouseEvent *event)
+{
+	qDebug() << "ehm?";
+
+	if (event->button() == Qt::MiddleButton)
+	{
+		qDebug() << "release mid";
+		setCursor(Qt::CrossCursor);
 	}
 }
 
