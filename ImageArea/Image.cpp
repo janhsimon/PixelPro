@@ -27,6 +27,7 @@ Image::Image(unsigned int width, unsigned int height, SideBar *sideBar, PreviewW
 	selectedColorIndex = 0;
 	image->fill(selectedColorIndex);
 	zoomFactor = 1;
+	isDrawingLine = false;
 	updateWidgetSize();
 	resetColorPaletteHotkeys();
 	setCursor(Qt::CrossCursor);
@@ -270,7 +271,7 @@ short Image::getHotkeyGroupForColorIndex(unsigned char index)
 	return -1;
 }
 
-void Image::paintEvent(QPaintEvent*)
+void Image::paintEvent(QPaintEvent *)
 {
 	assert(image);
 	assert(zoomFactor >= 1 && zoomFactor <= MAX_ZOOM_FACTOR);
@@ -278,17 +279,51 @@ void Image::paintEvent(QPaintEvent*)
 	QPainter painter(this);
 	QRect rect(0, 0, image->width() * zoomFactor, image->height() * zoomFactor);
 	painter.drawImage(rect, *image);
+
+	if (isDrawingLine)
+	{
+		QPen pen(getSelectedColor());
+		pen.setWidth(getZoomFactor());
+		painter.setPen(pen);
+
+		painter.drawLine(lastMousePositionForLineDrawing.x(), lastMousePositionForLineDrawing.y(),
+			currentMousePositionForLineDrawing.x(), currentMousePositionForLineDrawing.y());
+	}
 }
 
 void Image::mousePressEvent(QMouseEvent *event)
 {
-	if (event->button() == Qt::LeftButton)
-		mouseMoveEvent(event);
-	else if (event->button() == Qt::MiddleButton)
+	assert(sideBar);
+	DrawingToolsModel *drawingToolsModel = sideBar->getDrawingToolsModel();
+	assert(drawingToolsModel);
+
+	if (event->button() == Qt::MiddleButton)
 	{
-		lastMousePosition = event->globalPos();
+		lastMousePositionForScrubbing = event->globalPos();
 		setCursor(Qt::ClosedHandCursor);
-		qDebug() << "press mid";
+	}
+	else
+	{
+		if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::BRUSH)
+		{
+			if (event->button() == Qt::LeftButton)
+			{
+				lastMousePositionForPixelDrawing.setX(-1);
+				lastMousePositionForPixelDrawing.setY(-1);
+				mouseMoveEvent(event);
+			}
+			else if (event->button() == Qt::RightButton)
+			{
+				lastMousePositionForLineDrawing.setX(event->localPos().x());
+				lastMousePositionForLineDrawing.setY(event->localPos().y());
+				isDrawingLine = true;
+			}
+		}
+		else if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::COLOR_PICKER)
+		{
+			if (event->button() == Qt::LeftButton)
+				mouseMoveEvent(event);
+		}
 	}
 }
 
@@ -296,20 +331,7 @@ void Image::mouseMoveEvent(QMouseEvent *event)
 {
 	assert(event);
 
-	if (event->buttons() & Qt::MiddleButton)
-	{
-		QPoint delta(event->globalPos() - lastMousePosition);
-
-		assert(parentScrollArea);
-		QScrollBar *scrollBarX = parentScrollArea->horizontalScrollBar();
-		QScrollBar *scrollBarY = parentScrollArea->verticalScrollBar();
-
-		scrollBarX->setValue(scrollBarX->value() - delta.x());
-		scrollBarY->setValue(scrollBarY->value() - delta.y());
-
-		lastMousePosition = event->globalPos();
-	}
-	else if (event->buttons() & Qt::LeftButton)
+	if (event->buttons() & Qt::LeftButton)
 	{
 		assert(image);
 		assert(zoomFactor >= 1 && zoomFactor <= MAX_ZOOM_FACTOR);
@@ -329,17 +351,26 @@ void Image::mouseMoveEvent(QMouseEvent *event)
 		if (x < 0 || x >= originalImageWidth || y < 0 || y >= originalImageHeight)
 			return;
 
+		if (lastMousePositionForPixelDrawing.x() < 0 && lastMousePositionForPixelDrawing.y() < 0)
+		{
+			lastMousePositionForPixelDrawing.setX(x);
+			lastMousePositionForPixelDrawing.setY(y);
+		}
+
 		assert(sideBar);
 		DrawingToolsModel *drawingToolsModel = sideBar->getDrawingToolsModel();
 		assert(drawingToolsModel);
 
 		if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::BRUSH)
 		{
-			image->setPixel(x, y, getSelectedColorIndex());
+			drawLine(lastMousePositionForPixelDrawing.x(), lastMousePositionForPixelDrawing.y(), x, y);
 			repaint();
 
 			assert(previewWindow);
 			previewWindow->repaint();
+
+			lastMousePositionForPixelDrawing.setX(x);
+			lastMousePositionForPixelDrawing.setY(y);
 		}
 		else if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::COLOR_PICKER)
 		{
@@ -350,16 +381,139 @@ void Image::mouseMoveEvent(QMouseEvent *event)
 			colorPaletteSwatchArea->repaint();
 		}
 	}
+	else if (event->buttons() & Qt::RightButton)
+	{
+		currentMousePositionForLineDrawing.setX(event->localPos().x());
+		currentMousePositionForLineDrawing.setY(event->localPos().y());
+		repaint();
+	}
+	else if (event->buttons() & Qt::MiddleButton)
+	{
+		QPoint delta(event->globalPos() - lastMousePositionForScrubbing);
+
+		assert(parentScrollArea);
+		QScrollBar *scrollBarX = parentScrollArea->horizontalScrollBar();
+		QScrollBar *scrollBarY = parentScrollArea->verticalScrollBar();
+
+		scrollBarX->setValue(scrollBarX->value() - delta.x());
+		scrollBarY->setValue(scrollBarY->value() - delta.y());
+
+		lastMousePositionForScrubbing = event->globalPos();
+	}
 }
 
 void Image::mouseReleaseEvent(QMouseEvent *event)
 {
-	qDebug() << "ehm?";
+	assert(sideBar);
+	DrawingToolsModel *drawingToolsModel = sideBar->getDrawingToolsModel();
+	assert(drawingToolsModel);
 
 	if (event->button() == Qt::MiddleButton)
-	{
-		qDebug() << "release mid";
 		setCursor(Qt::CrossCursor);
+	else
+	{
+		if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::BRUSH)
+		{
+			if (event->button() == Qt::RightButton)
+			{
+				const unsigned int windowWidth = width();
+				const unsigned int windowHeight = height();
+				const unsigned int originalImageWidth = image->width();
+				const unsigned int originalImageHeight = image->height();
+				const unsigned int scaledImageWidth = originalImageWidth * zoomFactor;
+				const unsigned int scaledImageHeight = originalImageHeight * zoomFactor;
+				const unsigned int centerOffsetX = (windowWidth - scaledImageWidth) / 2;
+				const unsigned int centerOffsetY = (windowHeight - scaledImageHeight) / 2;
+
+				const unsigned int x1 = (lastMousePositionForLineDrawing.x() - centerOffsetX) / zoomFactor;
+				const unsigned int y1 = (lastMousePositionForLineDrawing.y() - centerOffsetY) / zoomFactor;
+				const unsigned int x2 = (currentMousePositionForLineDrawing.x() - centerOffsetX) / zoomFactor;
+				const unsigned int y2 = (currentMousePositionForLineDrawing.y() - centerOffsetY) / zoomFactor;
+
+				isDrawingLine = false;
+
+				if (x1 < 0 || x1 >= originalImageWidth || y1 < 0 || y1 >= originalImageHeight ||
+					x2 < 0 || x2 >= originalImageWidth || y2 < 0 || y2 >= originalImageHeight)
+				{
+					repaint();
+					return;
+				}
+
+				drawLine(x1, y1, x2, y2);
+				repaint();
+
+				assert(previewWindow);
+				previewWindow->repaint();
+			}
+		}
+	}
+}
+
+void Image::drawPixel(int x, int y)
+{
+	assert(image);
+	assert(x >= 0 && x < image->width() && y >= 0 && y < image->height());
+	image->setPixel(x, y, getSelectedColorIndex());
+}
+
+void Image::drawLine(int x1, int y1, int x2, int y2)
+{
+	assert(image);
+	assert(x1 >= 0 && x1 < image->width() && y1 >= 0 && y1 < image->height());
+	assert(x2 >= 0 && x2 < image->width() && y2 >= 0 && y2 < image->height());
+
+	if (x1 == x2 && y1 == y2)
+	// trivial case
+	{
+		drawPixel(x1, y1);
+		return;
+	}
+
+	// make sure start and end are part of the line
+	// (not guaranteed by bresenham's algorithm)
+	drawPixel(x1, y1);
+	drawPixel(x2, y2);
+
+
+	// bresenham's algorithm
+
+	const bool steep = abs(y2 - y1) > abs(x2 - x1);
+
+	if (steep)
+	{
+		std::swap(x1, y1);
+		std::swap(x2, y2);
+	}
+
+	if (x1 > x2)
+	{
+		std::swap(x1, x2);
+		std::swap(y1, y2);
+	}
+
+	const float dx = x2 - x1;
+	const float dy = abs(y2 - y1);
+
+	float error = dx / 2.f;
+	const int ystep = (y1 < y2) ? 1 : -1;
+	int y = y1;
+
+	const int maxX = x2;
+
+	for (int x = x1; x < maxX; ++x)
+	{
+		if (steep)
+			drawPixel(y, x);
+		else
+			drawPixel(x, y);
+
+		error -= dy;
+
+		if (error < 0)
+		{
+			y += ystep;
+			error += dx;
+		}
 	}
 }
 

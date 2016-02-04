@@ -49,8 +49,14 @@ private:
 	unsigned short zoomFactor;
 	unsigned char selectedColorIndex;
 	short hotkeyedColors[MAX_COLOR_HOTKEYS];
-	QPoint lastMousePosition;
+	bool isDrawingLine;
+	QPoint lastMousePositionForPixelDrawing;
+	QPoint currentMousePositionForLineDrawing;
+	QPoint lastMousePositionForLineDrawing;
+	QPoint lastMousePositionForScrubbing;
 
+	void drawPixel(int x, int y);
+	void drawLine(int x1, int y1, int x2, int y2);
 	void clipColorPaletteToNearestPowerOfTwo();
 	void makeDefaultColorPalette();
 	void resetColorPaletteHotkeys();
