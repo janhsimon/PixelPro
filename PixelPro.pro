@@ -23,7 +23,8 @@ SOURCES +=\
     PreviewWindow/PreviewWindow.cpp \
     ImageArea/ImageWindow.cpp \
     ImageArea/Image.cpp \
-    ImageArea/ImageScrollBarFilter.cpp
+    ImageArea/ImageScrollBarFilter.cpp \
+    ImageArea/ImageInOut.cpp
 
 HEADERS  += \
     SideBar/SideBar.hpp \
@@ -36,4 +37,5 @@ HEADERS  += \
     PreviewWindow/PreviewWindow.hpp \
     ImageArea/ImageWindow.hpp \
     ImageArea/Image.hpp \
-    ImageArea/ImageScrollBarFilter.hpp
+    ImageArea/ImageScrollBarFilter.hpp \
+    ImageArea/ImageInOut.hpp

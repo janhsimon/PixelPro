@@ -22,6 +22,8 @@ public:
 	void zoomOut();
 	unsigned short getZoomFactor() { return zoomFactor; }
 
+	unsigned int getMaxColorsInPalette() { return MAX_COLORS_IN_PALETTE; }
+
 	QImage *getImage();
 	QColor getSelectedColor();
 	void setSelectedColor(const QColor &color);
@@ -30,6 +32,8 @@ public:
 	void hotkeySelectedColor(short hotkeyGroup);
 	void recallHotkeyedColor(short hotkeyGroup);
 	short getHotkeyGroupForColorIndex(unsigned char index);
+	void clipColorPaletteToNearestPowerOfTwo();
+	bool recreateImage(int width, int height);
 
 protected:
 	virtual void paintEvent(QPaintEvent *event);
@@ -57,7 +61,6 @@ private:
 
 	void drawPixel(int x, int y);
 	void drawLine(int x1, int y1, int x2, int y2);
-	void clipColorPaletteToNearestPowerOfTwo();
 	void makeDefaultColorPalette();
 	void resetColorPaletteHotkeys();
 	void updateWidgetSize();

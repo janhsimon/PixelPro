@@ -1,6 +1,7 @@
 #include <assert.h>
 
 #include "Image.hpp"
+#include "ImageInOut.hpp"
 
 Image::Image(unsigned int width, unsigned int height, SideBar *sideBar, PreviewWindow *previewWindow, QScrollArea *parentScrollArea)
 {
@@ -19,7 +20,7 @@ Image::Image(unsigned int width, unsigned int height, SideBar *sideBar, PreviewW
 
 	if (image->isNull())
 	{
-		QMessageBox::critical(nullptr, "Error", "Failed to create new image file.");
+		QMessageBox::critical(nullptr, "Error", "Failed to create new " + QString::number(width) + "x" + QString::number(height) + " image file.");
 		return;
 	}
 
@@ -41,78 +42,8 @@ Image::~Image()
 
 bool Image::importFromImageFile(const QString &fileName)
 {
-	assert(!fileName.isNull() && !fileName.isEmpty());
-
-	QImage importImage(fileName);
-
-	if (importImage.isNull())
-	{
-		QMessageBox::critical(nullptr, "Error", "Failed to import image file \"" + fileName + "\".");
+	if (!ImageInOut::importFromImageFile(this, fileName))
 		return false;
-	}
-
-	const unsigned int newWidth = importImage.width();
-	const unsigned int newHeight = importImage.height();
-
-	assert(newWidth > 0 && newHeight > 0);
-
-	if (image)
-		delete image;
-
-	image = new QImage(QSize(newWidth, newHeight), QImage::Format_Indexed8);
-
-	if (image->isNull())
-	{
-		QMessageBox::critical(nullptr, "Error", "Failed to import image file \"" + fileName + "\".");
-		return false;
-	}
-
-	// temporary setting so that we can set pixel index data below
-	// will be overwritten afterwards with the color table we're building
-	image->setColorCount(256);
-
-	QVector<QRgb> newColorTable;
-	bool newColorTableIsFull = false;
-	for (unsigned int y = 0; y < newHeight; ++y)
-	{
-		for (unsigned int x = 0; x < newWidth; ++x)
-		{
-			QColor importColor(importImage.pixel(x, y));
-
-			bool isImportColorInNewColorTable = false;
-
-			for (int i = 0; i < newColorTable.length(); ++i)
-			{
-				if (newColorTable[i] == importColor.rgb())
-				{
-					isImportColorInNewColorTable = true;
-					image->setPixel(x, y, i);
-					break;
-				}
-			}
-
-			if (!isImportColorInNewColorTable)
-			{
-				image->setPixel(x, y, newColorTable.length());
-				newColorTable.push_back(importColor.rgb());
-
-				unsigned int newColorTableLength = newColorTable.length();
-				if (newColorTableLength >= MAX_COLORS_IN_PALETTE)
-				{
-					newColorTableIsFull = true;
-					QMessageBox::critical(nullptr, "Warning", "Too many colors in imported image file \"" + fileName + "\", only a maximum of "
-										  + QString::number(MAX_COLORS_IN_PALETTE) + " colors are supported. Additional colors will be discarded.");
-					break;
-				}
-			}
-		}
-
-		if (newColorTableIsFull)
-			break;
-	}
-
-	image->setColorTable(newColorTable);
-	clipColorPaletteToNearestPowerOfTwo();
 
 	selectedColorIndex = 0;
 	zoomFactor = 1;
@@ -124,55 +55,14 @@ bool Image::importFromImageFile(const QString &fileName)
 
 void Image::exportToImageFile(const QString &fileName)
 {
-	assert(image);
-	if (!image->save(fileName))
-		QMessageBox::critical(nullptr, "Error", "Failed to export image file to \"" + fileName + "\".");
+	ImageInOut::exportToImageFile(this, fileName);
 }
 
 void Image::importColorPalette(const QString &fileName)
 {
-	QFile file(fileName);
+	ImageInOut::importColorPalette(this, fileName);
 
-	if (!file.open(QIODevice::ReadOnly))
-	{
-		QMessageBox::critical(nullptr, "Error", "Failed to load palette definition file \"" + fileName + "\": " + file.errorString());
-		return;
-	}
-
-	QByteArray bytes = file.readAll();
-
-	unsigned int numColorsInPalette = bytes.length() / 3;
-
-	if (numColorsInPalette > MAX_COLORS_IN_PALETTE)
-	{
-		QMessageBox::critical(nullptr, "Warning", "Found " + QString::number(numColorsInPalette) + " colors in palette definition file \"" +
-										fileName + "\" but only a maximum of " + QString::number(MAX_COLORS_IN_PALETTE) + " colors are supported. " +
-										"Additional colors will be discarded.");
-		numColorsInPalette = MAX_COLORS_IN_PALETTE;
-	}
-
-	assert(image);
-
-	for (unsigned short colorIndex = 0; colorIndex < numColorsInPalette; ++colorIndex)
-	{
-		unsigned short byteIndex = colorIndex * 3;
-
-		assert(byteIndex + 0 >= 0 && byteIndex + 2 < bytes.length());
-
-		const unsigned char r = bytes[byteIndex + 0];
-		const unsigned char g = bytes[byteIndex + 1];
-		const unsigned char b = bytes[byteIndex + 2];
-
-		QColor color(r, g, b);
-		image->setColor(colorIndex, color.rgb());
-	}
-
-	QColor color = Qt::black;
-
-	for (unsigned short colorIndex = numColorsInPalette; colorIndex < MAX_COLORS_IN_PALETTE; ++colorIndex)
-		image->setColor(colorIndex, color.rgb());
-
-	clipColorPaletteToNearestPowerOfTwo();
+	selectedColorIndex = 0;
 	resetColorPaletteHotkeys();
 }
 
@@ -269,6 +159,36 @@ short Image::getHotkeyGroupForColorIndex(unsigned char index)
 	}
 
 	return -1;
+}
+
+void Image::clipColorPaletteToNearestPowerOfTwo()
+{
+	assert(image);
+
+	for (int i = 15; i >= 1; --i)
+	{
+		if (image->colorCount() > i * i)
+		{
+			image->setColorCount((i + 1) * (i + 1));
+			break;
+		}
+	}
+}
+
+bool Image::recreateImage(int width, int height)
+{
+	if (image)
+		delete image;
+
+	image = new QImage(QSize(width, height), QImage::Format_Indexed8);
+
+	if (image->isNull())
+	{
+		QMessageBox::critical(nullptr, "Error", "Failed to allocate memory for " + QString::number(width) + "x" + QString::number(height) + " image.");
+		return false;
+	}
+
+	return true;
 }
 
 void Image::paintEvent(QPaintEvent *)
@@ -513,20 +433,6 @@ void Image::drawLine(int x1, int y1, int x2, int y2)
 		{
 			y += ystep;
 			error += dx;
-		}
-	}
-}
-
-void Image::clipColorPaletteToNearestPowerOfTwo()
-{
-	assert(image);
-
-	for (int i = 15; i >= 1; --i)
-	{
-		if (image->colorCount() > i * i)
-		{
-			image->setColorCount((i + 1) * (i + 1));
-			break;
 		}
 	}
 }
