@@ -137,13 +137,20 @@ void Editor::createViewMenu()
 
 	zoomInAction = new QAction(tr("Zoom &In"), this);
 	zoomInAction->setShortcut(Qt::CTRL + Qt::Key_Plus);
-	connect(zoomInAction, SIGNAL(triggered()), imageArea, SLOT(zoomInCurrentImage()));
+	connect(zoomInAction, SIGNAL(triggered()), imageArea, SLOT(zoomIn()));
 	viewMenu->addAction(zoomInAction);
 
 	zoomOutAction = new QAction(tr("Zoom &Out"), this);
 	zoomOutAction->setShortcut(Qt::CTRL + Qt::Key_Minus);
-	connect(zoomOutAction, SIGNAL(triggered()), imageArea, SLOT(zoomOutCurrentImage()));
+	connect(zoomOutAction, SIGNAL(triggered()), imageArea, SLOT(zoomOut()));
 	viewMenu->addAction(zoomOutAction);
+
+	viewMenu->addSeparator();
+
+	toggleGridAction = new QAction(tr("Toggle &Grid"), this);
+	toggleGridAction->setShortcut(Qt::CTRL + Qt::Key_G);
+	connect(toggleGridAction, SIGNAL(triggered()), imageArea, SLOT(toggleGrid()));
+	viewMenu->addAction(toggleGridAction);
 }
 
 void Editor::createWindowMenu()

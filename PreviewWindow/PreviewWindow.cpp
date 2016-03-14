@@ -52,9 +52,8 @@ void PreviewWindow::zoomOut()
 
 void PreviewWindow::paintEvent(QPaintEvent*)
 {
-	//assert(zoomFactor > 0);
-
-	Image *currentImage = ImageArea::getCurrentImage();
+    /*
+    Image *currentImage = ImageArea::getCurrentImage();
 
 	QPainter painter(this);
 
@@ -75,26 +74,12 @@ void PreviewWindow::paintEvent(QPaintEvent*)
 	QImage *image = currentImage->getImage();
 	assert(image);
 
-	/*
-	painter.setPen(Qt::darkGray);
-	painter.setBrush(Qt::darkGray);
-	painter.drawRect(0, 0, width(), height());
-
-	const unsigned int windowWidth = width();
-	const unsigned int windowHeight = height();
-	const unsigned int originalImageWidth = image->width();
-	const unsigned int originalImageHeight = image->height();
-	const unsigned int scaledImageWidth = originalImageWidth * zoomFactor;
-	const unsigned int scaledImageHeight = originalImageHeight * zoomFactor;
-	const unsigned int centerOffsetX = (windowWidth - scaledImageWidth) / 2;
-	const unsigned int centerOffsetY = (windowHeight - scaledImageHeight) / 2;
-	*/
-
-	QRect rect(0, 0, image->width(), image->height());//(centerOffsetX, centerOffsetY, scaledImageWidth, scaledImageHeight);
+    QRect rect(0, 0, image->width(), image->height());
 	painter.drawImage(rect, *image);
 
 	setMinimumSize(image->width(), image->height());
 	setMaximumSize(minimumSize());
+    */
 }
 
 /*

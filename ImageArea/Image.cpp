@@ -29,6 +29,7 @@ Image::Image(unsigned int width, unsigned int height, SideBar *sideBar, PreviewW
 	image->fill(selectedColorIndex);
 	zoomFactor = 1;
 	isDrawingLine = false;
+	isDrawingGrid = true;
 	updateWidgetSize();
 	resetColorPaletteHotkeys();
 	setCursor(Qt::CrossCursor);
@@ -93,6 +94,12 @@ void Image::zoomOut()
 	assert(zoomFactor >= 1 && zoomFactor <= MAX_ZOOM_FACTOR);
 
 	updateWidgetSize();
+	repaint();
+}
+
+void Image::toggleGrid()
+{
+	isDrawingGrid = !isDrawingGrid;
 	repaint();
 }
 
@@ -199,6 +206,19 @@ void Image::paintEvent(QPaintEvent *)
 	QPainter painter(this);
 	QRect rect(0, 0, image->width() * zoomFactor, image->height() * zoomFactor);
 	painter.drawImage(rect, *image);
+
+	if (isDrawingGrid && zoomFactor > 4)
+	{
+		QPen pen(Qt::gray);
+		pen.setWidth(1);
+		painter.setPen(pen);
+
+		for (int y = 1; y < image->height(); ++y)
+			painter.drawLine(0, y * zoomFactor, image->width()* zoomFactor, y * zoomFactor);
+
+		for (int x = 1; x < image->width(); ++x)
+			painter.drawLine(x * zoomFactor, 0, x * zoomFactor, image->height()* zoomFactor);
+	}
 
 	if (isDrawingLine)
 	{

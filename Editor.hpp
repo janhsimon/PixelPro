@@ -42,6 +42,7 @@ private:
 	QMenu *viewMenu;
 	QAction *zoomInAction;
 	QAction *zoomOutAction;
+	QAction *toggleGridAction;
 
 	QMenu *windowMenu;
 	QAction *closeWindowAction;

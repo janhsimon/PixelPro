@@ -28,8 +28,9 @@ public slots:
 	void saveProjectAs();
 	void importImage();
 	void exportImage();
-	void zoomInCurrentImage();
-	void zoomOutCurrentImage();
+	void zoomIn();
+	void zoomOut();
+	void toggleGrid();
 
 private slots:
 	void setCurrentImageWindow(QMdiSubWindow *currentImageWindow);

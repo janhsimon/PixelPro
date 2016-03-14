@@ -94,7 +94,7 @@ void ImageArea::exportImage()
 	currentImage->exportToImageFile(fileName);
 }
 
-void ImageArea::zoomInCurrentImage()
+void ImageArea::zoomIn()
 {
 	Image *currentImage = getCurrentImage();
 
@@ -102,12 +102,20 @@ void ImageArea::zoomInCurrentImage()
 		currentImage->zoomIn();
 }
 
-void ImageArea::zoomOutCurrentImage()
+void ImageArea::zoomOut()
 {
 	Image *currentImage = getCurrentImage();
 
 	if (currentImage)
 		currentImage->zoomOut();
+}
+
+void ImageArea::toggleGrid()
+{
+	Image *currentImage = getCurrentImage();
+
+	if (currentImage)
+		currentImage->toggleGrid();
 }
 
 void ImageArea::setCurrentImageWindow(QMdiSubWindow *currentImageWindow)

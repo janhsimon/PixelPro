@@ -21,6 +21,7 @@ public:
 	void zoomIn();
 	void zoomOut();
 	unsigned short getZoomFactor() { return zoomFactor; }
+	void toggleGrid();
 
 	unsigned int getMaxColorsInPalette() { return MAX_COLORS_IN_PALETTE; }
 
@@ -54,6 +55,7 @@ private:
 	unsigned char selectedColorIndex;
 	short hotkeyedColors[MAX_COLOR_HOTKEYS];
 	bool isDrawingLine;
+	bool isDrawingGrid;
 	QPoint lastMousePositionForPixelDrawing;
 	QPoint currentMousePositionForLineDrawing;
 	QPoint lastMousePositionForLineDrawing;
