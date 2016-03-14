@@ -264,6 +264,11 @@ void Image::mousePressEvent(QMouseEvent *event)
 			if (event->button() == Qt::LeftButton)
 				mouseMoveEvent(event);
 		}
+		else if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::FILL)
+		{
+			if (event->button() == Qt::LeftButton)
+				mouseMoveEvent(event);
+		}
 	}
 }
 
@@ -319,6 +324,15 @@ void Image::mouseMoveEvent(QMouseEvent *event)
 			ColorPaletteSwatchArea *colorPaletteSwatchArea = sideBar->getColorPaletteSwatchArea();
 			assert(colorPaletteSwatchArea);
 			colorPaletteSwatchArea->repaint();
+		}
+		else if (drawingToolsModel->getActiveDrawingTool() == DrawingTool::FILL)
+		{
+			//drawLine(lastMousePositionForPixelDrawing.x(), lastMousePositionForPixelDrawing.y(), x, y);
+			fill(x, y);
+			repaint();
+
+			assert(previewWindow);
+			previewWindow->repaint();
 		}
 	}
 	else if (event->buttons() & Qt::RightButton)
@@ -455,6 +469,36 @@ void Image::drawLine(int x1, int y1, int x2, int y2)
 			error += dx;
 		}
 	}
+}
+
+void Image::fill(int x, int y, int backgroundColor)
+{
+	assert(image);
+
+	if (x < 0 || x >= image->width() || y < 0 || y >= image->height())
+		return;
+
+	int sampledColor = image->pixelIndex(x, y);
+
+	if (backgroundColor < 0)
+	// if we haven't determined the background color yet
+		backgroundColor = sampledColor;
+
+	if (backgroundColor == getSelectedColorIndex())
+	// if we're trying to fill something that already is that color
+		// we're done rightaway
+		return;
+
+	if (sampledColor != backgroundColor)
+	// if we hit a color that is not the color we're trying to fill
+		// we can stop
+		return;
+
+	drawPixel(x, y);
+	fill(x - 1, y, backgroundColor);
+	fill(x + 1, y, backgroundColor);
+	fill(x, y - 1, backgroundColor);
+	fill(x, y + 1, backgroundColor);
 }
 
 void Image::makeDefaultColorPalette()

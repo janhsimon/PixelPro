@@ -63,6 +63,7 @@ private:
 
 	void drawPixel(int x, int y);
 	void drawLine(int x1, int y1, int x2, int y2);
+	void fill(int x, int y, int backgroundColor = -1);
 	void makeDefaultColorPalette();
 	void resetColorPaletteHotkeys();
 	void updateWidgetSize();

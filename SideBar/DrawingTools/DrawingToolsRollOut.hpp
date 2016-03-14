@@ -16,7 +16,7 @@ public:
 	QPushButton *getSelectButton();
 	QPushButton *getBrushButton();
 	QPushButton *getColorPickerButton();
-	QPushButton *getRectangleButton();
+	QPushButton *getFillButton();
 	QPushButton *getCircleButton();
 
 private:
@@ -27,13 +27,13 @@ private:
 	QPushButton *selectButton;
 	QPushButton *brushButton;
 	QPushButton *colorPickerButton;
-	QPushButton *rectangleButton;
+	QPushButton *fillButton;
 	QPushButton *circleButton;
 
 private slots:
 	void selectButtonClicked();
 	void brushButtonClicked();
 	void colorPickerButtonClicked();
-	void rectangleButtonClicked();
+	void fillButtonClicked();
 	void circleButtonClicked();
 };

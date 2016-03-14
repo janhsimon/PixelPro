@@ -217,9 +217,9 @@ void Editor::keyReleaseEvent(QKeyEvent *event)
 	}
 	else if (event->key() == Qt::Key_R)
 	{
-		QPushButton *rectangleButton = drawingToolsRollOut->getRectangleButton();
-		assert(rectangleButton);
-		rectangleButton->click();
+		QPushButton *fillButton = drawingToolsRollOut->getFillButton();
+		assert(fillButton);
+		fillButton->click();
 	}
 	else if (event->key() == Qt::Key_T)
 	{

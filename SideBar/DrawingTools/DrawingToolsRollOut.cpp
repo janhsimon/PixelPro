@@ -25,11 +25,11 @@ DrawingToolsRollOut::DrawingToolsRollOut()
 	colorPickerButton->setChecked(false);
 	connect(colorPickerButton, SIGNAL(clicked()), this, SLOT(colorPickerButtonClicked()));
 
-	rectangleButton = new QPushButton(tr("Rectangle"));
-	rectangleButton->setFixedSize(TOOL_BUTTON_SIZE, TOOL_BUTTON_SIZE);
-	rectangleButton->setCheckable(true);
-	rectangleButton->setChecked(false);
-	connect(rectangleButton, SIGNAL(clicked()), this, SLOT(rectangleButtonClicked()));
+	fillButton = new QPushButton(tr("Fill"));
+	fillButton->setFixedSize(TOOL_BUTTON_SIZE, TOOL_BUTTON_SIZE);
+	fillButton->setCheckable(true);
+	fillButton->setChecked(false);
+	connect(fillButton, SIGNAL(clicked()), this, SLOT(fillButtonClicked()));
 
 	circleButton = new QPushButton(tr("Circle"));
 	circleButton->setFixedSize(TOOL_BUTTON_SIZE, TOOL_BUTTON_SIZE);
@@ -41,7 +41,7 @@ DrawingToolsRollOut::DrawingToolsRollOut()
 	toolButtonGroup->addButton(selectButton);
 	toolButtonGroup->addButton(brushButton);
 	toolButtonGroup->addButton(colorPickerButton);
-	toolButtonGroup->addButton(rectangleButton);
+	toolButtonGroup->addButton(fillButton);
 	toolButtonGroup->addButton(circleButton);
 
 	QHBoxLayout *layout = new QHBoxLayout();
@@ -50,7 +50,7 @@ DrawingToolsRollOut::DrawingToolsRollOut()
 	layout->addWidget(selectButton);
 	layout->addWidget(brushButton);
 	layout->addWidget(colorPickerButton);
-	layout->addWidget(rectangleButton);
+	layout->addWidget(fillButton);
 	layout->addWidget(circleButton);
 	setLayout(layout);
 }
@@ -79,10 +79,10 @@ QPushButton *DrawingToolsRollOut::getColorPickerButton()
 	return colorPickerButton;
 }
 
-QPushButton *DrawingToolsRollOut::getRectangleButton()
+QPushButton *DrawingToolsRollOut::getFillButton()
 {
-	assert(rectangleButton);
-	return rectangleButton;
+	assert(fillButton);
+	return fillButton;
 }
 
 QPushButton *DrawingToolsRollOut::getCircleButton()
@@ -121,12 +121,10 @@ void DrawingToolsRollOut::colorPickerButtonClicked()
 		image->setCursor(Qt::PointingHandCursor);
 }
 
-void DrawingToolsRollOut::rectangleButtonClicked()
+void DrawingToolsRollOut::fillButtonClicked()
 {
-	QMessageBox::warning(nullptr, "Placeholder", "Rectangle Button clicked");
-
-	//assert(drawingToolsModel);
-	//drawingToolsModel->setActiveDrawingTool(DrawingTool::SELECTION);
+	assert(drawingToolsModel);
+	drawingToolsModel->setActiveDrawingTool(DrawingTool::FILL);
 }
 
 void DrawingToolsRollOut::circleButtonClicked()

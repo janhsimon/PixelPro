@@ -3,7 +3,8 @@
 enum DrawingTool
 {
 	BRUSH,
-	COLOR_PICKER
+	COLOR_PICKER,
+	FILL
 };
 
 class DrawingToolsModel

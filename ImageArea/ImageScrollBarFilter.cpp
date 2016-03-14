@@ -18,9 +18,9 @@ bool ImageScrollBarFilter::eventFilter(QObject *object, QEvent *event)
 		QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
 		assert(wheelEvent);
 
-		Qt::KeyboardModifiers keyboardModifiers = QApplication::keyboardModifiers();
+		//Qt::KeyboardModifiers keyboardModifiers = QApplication::keyboardModifiers();
 
-		if (keyboardModifiers.testFlag(Qt::ControlModifier))
+		//if (keyboardModifiers.testFlag(Qt::ControlModifier))
 		{
 			assert(image);
 
