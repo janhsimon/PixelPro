@@ -24,7 +24,9 @@ SOURCES +=\
     ImageArea/ImageWindow.cpp \
     ImageArea/Image.cpp \
     ImageArea/ImageScrollBarFilter.cpp \
-    ImageArea/ImageInOut.cpp
+    ImageArea/ImageInOut.cpp \
+    Dialogs/NewProjectDialog.cpp \
+    Dialogs/ImageSizeValidator.cpp
 
 HEADERS  += \
     SideBar/SideBar.hpp \
@@ -38,4 +40,6 @@ HEADERS  += \
     ImageArea/ImageWindow.hpp \
     ImageArea/Image.hpp \
     ImageArea/ImageScrollBarFilter.hpp \
-    ImageArea/ImageInOut.hpp
+    ImageArea/ImageInOut.hpp \
+    Dialogs/NewProjectDialog.hpp \
+    Dialogs/ImageSizeValidator.hpp

@@ -2,8 +2,11 @@
 
 #include "ImageWindow.hpp"
 
-ImageWindow::ImageWindow(SideBar *sideBar, PreviewWindow *previewWindow)
+ImageWindow::ImageWindow(unsigned int width, unsigned int height, SideBar *sideBar, PreviewWindow *previewWindow)
 {
+	assert(width > 0);
+	assert(height > 0);
+
 	assert(sideBar);
 	this->sideBar = sideBar;
 
@@ -14,7 +17,7 @@ ImageWindow::ImageWindow(SideBar *sideBar, PreviewWindow *previewWindow)
 	scrollArea->setAlignment(Qt::AlignCenter);
 	scrollArea->setBackgroundRole(QPalette::Dark);
 
-	image = new Image(64, 64, sideBar, previewWindow, scrollArea);
+	image = new Image(width, height, sideBar, previewWindow, scrollArea);
 	assert(image);
 	scrollArea->setWidget(image);
 

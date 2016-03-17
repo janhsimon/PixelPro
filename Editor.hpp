@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Dialogs/NewProjectDialog.hpp"
 #include "ImageArea/ImageArea.hpp"
 #include "PreviewWindow/PreviewWindow.hpp"
 #include "SideBar/SideBar.hpp"
@@ -25,6 +26,8 @@ private:
 	QSplitter *splitter;
 
 	PreviewWindow *previewWindow;
+
+	NewProjectDialog *newProjectDialog;
 
 	QMenu *fileMenu;
 	QAction *newProjectAction;

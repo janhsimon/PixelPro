@@ -22,7 +22,7 @@ private:
 	static ImageWindow *currentImageWindow;
 
 public slots:
-	void newProject();
+	void newProject(unsigned int width, unsigned int height);
 	void openProject();
 	void saveProject();
 	void saveProjectAs();

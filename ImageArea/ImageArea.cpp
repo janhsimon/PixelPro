@@ -33,11 +33,11 @@ Image *ImageArea::getCurrentImage()
 	return currentImage;
 }
 
-void ImageArea::newProject()
+void ImageArea::newProject(unsigned int width, unsigned int height)
 {
 	assert(sideBar);
 	assert(previewWindow);
-	ImageWindow *imageWindow = new ImageWindow(sideBar, previewWindow);
+	ImageWindow *imageWindow = new ImageWindow(width, height, sideBar, previewWindow);
 	assert(imageWindow);
 	addSubWindow(imageWindow);
 	imageWindow->show();
@@ -67,7 +67,7 @@ void ImageArea::importImage()
 
 	assert(sideBar);
 	assert(previewWindow);
-	ImageWindow *imageWindow = new ImageWindow(sideBar, previewWindow);
+	ImageWindow *imageWindow = new ImageWindow(1, 1, sideBar, previewWindow);
 	assert(imageWindow);
 
 	Image *image = imageWindow->getImage();

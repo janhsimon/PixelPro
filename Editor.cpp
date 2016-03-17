@@ -6,6 +6,7 @@ Editor::Editor()
 {
 	previewWindow = new PreviewWindow(this);
 	//previewWindow->setInitialPosition(QPoint(1920, 0));
+	previewWindow->hide();
 
 	createSideBar();
 
@@ -17,6 +18,8 @@ Editor::Editor()
 	splitter->addWidget(sideBar);
 	splitter->addWidget(imageArea);
 	setCentralWidget(splitter);
+
+	newProjectDialog = new NewProjectDialog(imageArea, this);
 
 	createFileMenu();
 	createColorPaletteMenu();
@@ -67,12 +70,13 @@ void Editor::createFileMenu()
 {
 	assert(menuBar());
 	assert(imageArea);
+	assert(newProjectDialog);
 
 	fileMenu = menuBar()->addMenu(tr("&File"));
 
 	newProjectAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/new.png"), tr("&New Project..."), this);
 	newProjectAction->setShortcut(Qt::CTRL + Qt::Key_N);
-	connect(newProjectAction, SIGNAL(triggered()), imageArea, SLOT(newProject()));
+	connect(newProjectAction, SIGNAL(triggered()), newProjectDialog, SLOT(exec()));
 	fileMenu->addAction(newProjectAction);
 
 	openProjectAction = new QAction(QIcon("E:/Qt Projects/PixelPro/images/open.png"), tr("&Open Project..."), this);

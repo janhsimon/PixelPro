@@ -12,7 +12,7 @@ class ImageWindow : public QWidget
 	Q_OBJECT
 
 public:
-	ImageWindow(SideBar *sideBar, PreviewWindow *previewWindow);
+	ImageWindow(unsigned int width, unsigned int height, SideBar *sideBar, PreviewWindow *previewWindow);
 	~ImageWindow();
 
 	Image *getImage();
